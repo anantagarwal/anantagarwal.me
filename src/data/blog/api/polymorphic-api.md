@@ -24,23 +24,28 @@ In this post, we’ll explore what polymorphic APIs are, why they’re useful, a
 
 In this deep dive, we’ll cover:
 
-- What polymorphic APIs are (with examples)  
-- How to implement them in **REST**  
-- Validation, documentation, and testing concerns  
-- Best practices and pitfalls to avoid 
+- What polymorphic APIs are (with examples)
+- How to implement them in **REST**
+- Validation, documentation, and testing concerns
+- Best practices and pitfalls to avoid
 
 ---
 
 ## What is a Polymorphic API?
 
-In programming, *polymorphism* refers to the ability of a function, object, or interface to take on many forms.  
+In programming, _polymorphism_ refers to the ability of a function, object, or interface to take on many forms.  
 When applied to APIs, it means designing endpoints or contracts that can handle different resource types or behaviors while maintaining a consistent interface.
 
-For example: think of a `/payments` API:
+For example: think of a payments API:
 
-- Credit card payments  
-- Bank transfers  
-- Digital wallets (Apple Pay, Google Pay)  
+- Credit card payments
+- Bank transfers
+- Digital wallets (Apple Pay, Google Pay)
 
-You could create 3 separate endpoints (`/credit-card-payments`, `/bank-transfers`, `/wallets`) … or you could design **one polymorphic endpoint** as `/payments`
+You could create 3 separate endpoints
 
+- `/credit-card-payments`
+- `/bank-transfers`
+- `/wallets` …
+
+or you could design **one polymorphic endpoint** as `/payments`
