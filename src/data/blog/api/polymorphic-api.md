@@ -1,9 +1,10 @@
 ---
 author: Anant Agarwal
-pubDatetime: 2025-08-23T08:18:19.693Z
+pubDatetime: 2025-08-22
 title: "Understanding Polymorphic APIs"
 slug: polymorphic-api
 featured: true
+draft: false
 ogImage: ../../../assets/images/AstroPaper-v5.png
 tags:
   - api

@@ -1,5 +1,5 @@
 export const SITE = {
-  website: "https://anantagarwal.me/", // replace this with your deployed domain
+  website: "https://anantagarwal.me/",
   author: "Anant Agarwal",
   profile: "https://anantagarwal.me/",
   desc: "Software Craftsman",
@@ -8,9 +8,9 @@ export const SITE = {
   lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,
-  scheduledPostMargin: 15 * 60 * 1000, // 15 minutes
+  scheduledPostMargin: 15 * 60 * 1000,
   showArchives: true,
-  showBackButton: true, // show back button in post detail
+  showBackButton: true,
   editPost: {
     enabled: false,
     text: "Edit page",
