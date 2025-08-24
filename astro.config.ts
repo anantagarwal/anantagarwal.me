@@ -11,6 +11,10 @@ import {
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
 
+import mdx from "@astrojs/mdx";
+
+import react from "@astrojs/react";
+
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
@@ -18,6 +22,8 @@ export default defineConfig({
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
+    mdx(),
+    react(),
   ],
   markdown: {
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],

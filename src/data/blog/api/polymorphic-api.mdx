@@ -1,0 +1,445 @@
+---
+author: Anant Agarwal
+pubDatetime: 2025-08-22
+title: "Understanding Polymorphic APIs"
+slug: polymorphic-api
+featured: true
+draft: false
+ogImage: ../../../assets/images/AstroPaper-v5.png
+tags:
+  - api
+  - design
+  - polymorphism
+  - architecture
+description: "A deep dive into polymorphic APIs — what they are, why they matter, and how to design them effectively."
+---
+
+import ApiDocsWrapper from "@/components/ApiDocsWrapper.astro";
+
+## Table of contents
+
+## Introduction
+
+APIs are the backbone of modern software systems. As applications grow, so does the need for flexibility in how data and behaviors are exposed.  
+
+**Polymorphic APIs** offer a way to design interfaces that adapt to different types of data or requests without duplicating logic.
+
+In this post, we’ll explore what polymorphic APIs are, why they’re useful, and some patterns you can use to design them effectively.
+
+In this deep dive, we’ll cover:
+
+- What polymorphic APIs are (with examples)
+- How to implement them in **REST**
+- Documentation
+
+---
+
+## What is a Polymorphic API?
+
+In programming, _polymorphism_ refers to the ability of a function, object, or interface to take on many forms.  
+When applied to APIs, it means designing endpoints or contracts that can handle different resource types or behaviors while maintaining a consistent interface.
+
+For example: think of a payments API:
+
+- Credit card payments
+- Bank transfers
+- Digital wallets (Apple Pay, Google Pay)
+
+You could create 3 separate endpoints
+
+- `/credit-card-payments`
+- `/bank-transfers`
+- `/wallets` …
+
+or you could design **one polymorphic endpoint** as `/payments`
+
+## How to Implement a Polymorphic REST API in Spring Boot
+
+### POST Payments
+
+The question is, how do you make Spring Boot understand and route the different payment types? The answer lies in Jackson's polymorphism features and a well-designed class hierarchy.
+
+First, you define an abstract base class that outlines the common structure for all payments.
+
+```java
+public abstract class PaymentRequest {
+    private BigDecimal amount;
+    private String currency;
+    // ... common getters and setters
+}
+```
+
+Next, create your concrete implementations. The key is to use the `@JsonTypeInfo` and `@JsonSubTypes` annotations on the base class. This tells Jackson how to determine the concrete class from the JSON payload.
+
+```java
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type" // The JSON property that acts as the discriminator
+)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = CreditCardPayment.class, name = "credit_card"),
+    @JsonSubTypes.Type(value = BankTransferPayment.class, name = "bank_transfer"),
+    @JsonSubTypes.Type(value = WalletPayment.class, name = "wallet")
+})
+public abstract class PaymentRequest {
+    // ... common fields
+}
+```
+
+Now, define your subclasses. Each one adds its own specific fields.
+
+```java
+public class CreditCardPayment extends PaymentRequest {
+    private String cardNumber;
+    private String expiryDate;
+    private String cvv;
+    // ... getters and setters
+}
+
+public class BankTransferPayment extends PaymentRequest {
+    private String accountNumber;
+    private String routingNumber;
+    // ... getters and setters
+}
+```
+
+Finally, your controller endpoint stays clean and simple. It just accepts the base type. Spring Boot and Jackson will work together to instantiate the correct subclass based on the `type` field in the incoming JSON.
+
+```java
+@PostMapping("/payments")
+public ResponseEntity<PaymentResponse> processPayment(@RequestBody @Valid PaymentRequest paymentRequest) {
+    PaymentService service = paymentServiceRegistry.getService(paymentRequest);
+    return ResponseEntity.ok(service.process(paymentRequest));
+}
+```
+
+> Notice how the controller doesn't need a messy if-else chain? The logic for handling each type is delegated to a service registry or strategy pattern, keeping the endpoint beautifully polymorphic.
+
+### GET Payments
+
+Lets extend this for fetching payment details, a single endpoint returns different shapes based on payment type.
+
+**Polymorphic Serialization**: Jackson's `@JsonTypeInfo` automatically adds a type field to JSON responses
+
+```java
+
+// Base response class with Jackson annotations
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = CreditCardPaymentResponse.class, name = "credit_card"),
+    @JsonSubTypes.Type(value = BankTransferPaymentResponse.class, name = "bank_transfer")
+})
+public abstract class PaymentResponse {
+    private String id;
+    private BigDecimal amount;
+    private String currency;
+    // Common fields and getters/setters
+}
+
+// Credit card specific response
+public class CreditCardPaymentResponse extends PaymentResponse {
+    private String maskedCardNumber;
+    private String expiryDate;
+    // Getters and setters
+}
+
+// Bank transfer specific response
+public class BankTransferPaymentResponse extends PaymentResponse {
+    private String accountNumberLastFour;
+    private String routingNumber;
+    // Getters and setters
+}
+
+@GetMapping("/payments/{id}")
+public PaymentResponse getPayment(@PathVariable String id) {
+    Payment payment = paymentService.findById(id);
+
+    // Map to appropriate response type based on payment method
+    switch(payment.getType()) {
+        case CREDIT_CARD:
+            return mapToCreditCardResponse(payment);
+        case BANK_TRANSFER:
+            return mapToBankTransferResponse(payment);
+        default:
+            throw new IllegalArgumentException("Unknown payment type");
+    }
+}
+```
+
+## OpenAPI Specs
+
+When documenting a polymorphic API manually in OpenAPI, you need to clearly communicate that a single endpoint can accept different shapes of data. The key to this is the `oneOf` and `discriminator` keywords.
+
+### Specs
+
+```yaml
+paths:
+  /payments:
+    post:
+      summary: Process a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/CreditCardPayment"
+                - $ref: "#/components/schemas/BankTransferPayment"
+              discriminator:
+                propertyName: type
+                mapping:
+                  credit_card: "#/components/schemas/CreditCardPayment"
+                  bank_transfer: "#/components/schemas/BankTransferPayment"
+  /payments/{id}:
+    get:
+      summary: Retrieve a specific payment by its ID
+      description: Returns a payment object. The structure varies based on the payment method type.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the payment
+      responses:
+        "200":
+          description: Payment found successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/CreditCardPaymentResponse"
+                  - $ref: "#/components/schemas/BankTransferPaymentResponse"
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    credit_card: "#/components/schemas/CreditCardPaymentResponse"
+                    bank_transfer: "#/components/schemas/BankTransferPaymentResponse"
+```
+
+### Why this works:
+
+- `oneOf`: Tells the consumer that the request must match exactly one of the listed schemas (`CreditCardPayment` or `BankTransferPayment`).
+- `discriminator`: Provides a practical "how-to" guide for both humans and code generators:
+- `propertyName`: type: Look at the value of the type field in the JSON object to figure out which schema to use.
+- `mapping`: If type equals `credit_card`, then you should validate the entire object against the `CreditCardPayment` schema. If it's `bank_transfer`, use the `BankTransferPayment` schema.
+- `allOf` + `$ref`: This is a best practice for inheritance in OpenAPI. It allows you to define the common fields in a `BasePayment` schema and then extend it for each specific type, avoiding duplication and making the spec much easier to read and maintain.
+
+This setup gives anyone reading your API documentation a crystal-clear understanding of how to construct a valid request for any supported payment type.
+
+## Completely Divergent Response Structures in Polymorphic APIs
+
+- Sometimes polymorphic APIs need to return completely different response structures that share no common attributes. 
+- This is common when an endpoint serves multiple distinct purposes, like returning account information versus analytics data.
+- This approach allows a single endpoint to serve completely different data structures based on client needs, providing flexibility while maintaining a clean API design. 
+- The key is ensuring clients know exactly what to expect for each parameter value and providing robust error handling for unexpected responses.
+
+```yaml
+paths:
+  /customers/{customerId}/data:
+    get:
+      summary: Get customer data
+      description: Returns either account information or analytics data based on the dataType parameter
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: dataType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [account, analytics]
+      responses:
+        "200":
+          description: Customer data
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AccountResponse"
+                  - $ref: "#/components/schemas/AnalyticsResponse"
+        "400":
+          description: Invalid data type
+```
+
+### Sample server code
+
+```java
+@RestController
+@RequestMapping("/customers/{customerId}")
+public class CustomerController {
+
+    @GetMapping("/data")
+    public ResponseEntity<?> getCustomerData(
+            @PathVariable String customerId,
+            @RequestParam String dataType) {
+
+        if ("account".equalsIgnoreCase(dataType)) {
+            AccountResponse accountData = accountService.getAccountData(customerId);
+            return ResponseEntity.ok(accountData);
+        } else if ("analytics".equalsIgnoreCase(dataType)) {
+            AnalyticsResponse analyticsData = analyticsService.getAnalyticsData(customerId);
+            return ResponseEntity.ok(analyticsData);
+        } else {
+            return ResponseEntity.badRequest().body("Invalid data type. Use 'account' or 'analytics'.");
+        }
+    }
+}
+```
+
+### Sample client code
+
+```java
+// Using RestTemplate with response type detection
+public Object getCustomerData(String customerId, String dataType) {
+    String url = baseUrl + "/customers/" + customerId + "/data?dataType=" + dataType;
+
+    if ("account".equals(dataType)) {
+        return restTemplate.getForObject(url, AccountResponse.class);
+    } else if ("analytics".equals(dataType)) {
+        return restTemplate.getForObject(url, AnalyticsResponse.class);
+    } else {
+        throw new IllegalArgumentException("Invalid data type");
+    }
+}
+
+// Using generic response handling
+public void processCustomerData(String customerId, String dataType) {
+    String url = baseUrl + "/customers/" + customerId + "/data?dataType=" + dataType;
+    ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+    String jsonResponse = response.getBody();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode rootNode = mapper.readTree(jsonResponse);
+
+    if ("account".equals(dataType)) {
+        AccountResponse accountData = mapper.treeToValue(rootNode, AccountResponse.class);
+        processAccountData(accountData);
+    } else if ("analytics".equals(dataType)) {
+        AnalyticsResponse analyticsData = mapper.treeToValue(rootNode, AnalyticsResponse.class);
+        processAnalyticsData(analyticsData);
+    }
+}
+```
+
+## Tools for Client Generation
+
+The most popular tool for this purpose is the `OpenAPI Generator`, which supports multiple client languages and frameworks.
+
+```bash
+docker pull openapitools/openapi-generator-cli
+
+```
+
+### Code Generation
+
+```bash
+#!/bin/bash
+
+# Configuration
+API_SPEC_FILE="openapi-payments.yaml"
+OUTPUT_DIR="./generated-clients"
+
+# Check if OpenAPI spec file exists
+if [ ! -f "$API_SPEC_FILE" ]; then
+    echo "Error: OpenAPI specification file '$API_SPEC_FILE' not found!"
+    exit 1
+fi
+
+# Create output directory
+mkdir -p $OUTPUT_DIR
+
+# Function to generate client code
+generate_client() {
+    local language=$1
+    local generator=$2
+    local output_path=$3
+    local additional_options=$4
+
+    echo "Generating $language client..."
+
+    docker run --rm \
+        -v ${PWD}:/local \
+        openapitools/openapi-generator-cli generate \
+        -i /local/$API_SPEC_FILE \
+        -g $generator \
+        -o /local/$output_path \
+        $additional_options
+
+    # Set proper permissions for the generated files
+    chmod -R a+rw $output_path
+
+    echo "$language client generated at $output_path"
+}
+
+# Clean previous generated clients
+echo "Cleaning previous generated clients..."
+rm -rf $OUTPUT_DIR/*
+
+# Generate Java client
+generate_client "Java" "java" \
+    "$OUTPUT_DIR/java-client" \
+    "--api-package com.example.payments.client.api \
+     --model-package com.example.payments.client.model \
+     --invoker-package com.example.payments.client.invoker \
+     --group-id com.example \
+     --artifact-id payments-client \
+     --artifact-version 1.0.0"
+
+echo "All clients generated successfully in the $OUTPUT_DIR directory!"
+echo "Generated clients:"
+ls -la $OUTPUT_DIR/
+```
+
+### Java Client Usage
+
+```java
+// Initialize the client
+ApiClient client = new ApiClient();
+client.setBasePath("https://api.example.com");
+
+// Create API instances
+PaymentsApi paymentsApi = new PaymentsApi(client);
+
+// Make API calls
+try {
+    // Create a credit card payment
+    CreditCardPaymentRequest request = new CreditCardPaymentRequest();
+    request.setType("credit_card");
+    request.setAmount(100.50);
+    request.setCurrency("USD");
+    request.setCardNumber("4111111111111111");
+    request.setExpiryDate("12/25");
+    request.setCvv("123");
+
+    PaymentResponse response = paymentsApi.createPayment(request);
+    System.out.println("Payment created with ID: " + response.getId());
+
+    // Retrieve a payment
+    PaymentResponse retrieved = paymentsApi.getPayment(response.getId());
+    System.out.println("Payment status: " + retrieved.getStatus());
+
+} catch (ApiException e) {
+    System.err.println("API error: " + e.getResponseBody());
+}
+```
+
+## Project Code
+
+A sample implementation for the above can be found on my [Github Repo](https://github.com/anantagarwal/blog-solutions/tree/main/polymorphic-api)
+
+## References
+
+- [Github Repo](https://github.com/anantagarwal/blog-solutions/tree/main/polymorphic-api)
+- [Full API Specs](https://github.com/anantagarwal/blog-solutions/blob/main/polymorphic-api/openapi-payments.yaml)
+- [Open Api, inheritance & polymorphism](https://swagger.io/docs/specification/v3_0/data-models/inheritance-and-polymorphism/)
+- [Jackson Polymorphic Type handling](https://www.baeldung.com/jackson-annotations#jackson-polymorphic-type-handling-annotations)
+- [Jackson Github](https://github.com/FasterXML/jackson-databind/wiki/Databind-Annotations#polymorphic-type-handling)

@@ -1,0 +1,161 @@
+openapi: "3.1.0"
+info:
+  title: Payments Polymorphic API Sample
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /payments:
+    post:
+      summary: Process a payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/CreditCardPayment"
+                - $ref: "#/components/schemas/BankTransferPayment"
+              discriminator:
+                propertyName: type
+                mapping:
+                  credit_card: "#/components/schemas/CreditCardPayment"
+                  bank_transfer: "#/components/schemas/BankTransferPayment"
+      responses:
+        "200":
+          description: Payment processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentResponse"
+  /payments/{id}:
+    get:
+      summary: Retrieve a specific payment by its ID
+      description: Returns a payment object. The structure varies based on the payment method type.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the payment
+      responses:
+        "200":
+          description: Payment found successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/CreditCardPaymentResponse"
+                  - $ref: "#/components/schemas/BankTransferPaymentResponse"
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    credit_card: "#/components/schemas/CreditCardPaymentResponse"
+                    bank_transfer: "#/components/schemas/BankTransferPaymentResponse"
+
+components:
+  schemas:
+    BasePayment:
+      type: object
+      required:
+        - type
+        - amount
+        - currency
+      properties:
+        type:
+          type: string
+          enum: [credit_card, bank_transfer]
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+          example: USD
+
+    CreditCardPayment:
+      allOf:
+        - $ref: "#/components/schemas/BasePayment"
+        - type: object
+          required:
+            - card_number
+            - expiry_date
+          properties:
+            card_number:
+              type: string
+            expiry_date:
+              type: string
+            cvv:
+              type: string
+
+    BankTransferPayment:
+      allOf:
+        - $ref: "#/components/schemas/BasePayment"
+        - type: object
+          required:
+            - account_number
+            - routing_number
+          properties:
+            account_number:
+              type: string
+            routing_number:
+              type: string
+
+    PaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [SUCCESS, FAILED, PENDING]
+    BasePaymentResponse:
+      type: object
+      required:
+        - id
+        - type
+        - amount
+        - currency
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [credit_card, bank_transfer]
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+          example: USD
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        created_at:
+          type: string
+          format: date-time
+
+    CreditCardPaymentResponse:
+      allOf:
+        - $ref: "#/components/schemas/BasePaymentResponse"
+        - type: object
+          properties:
+            masked_card_number:
+              type: string
+              example: "**** **** **** 1234"
+            expiry_date:
+              type: string
+              example: "12/25"
+
+    BankTransferPaymentResponse:
+      allOf:
+        - $ref: "#/components/schemas/BasePaymentResponse"
+        - type: object
+          properties:
+            account_number_last_four:
+              type: string
+              example: "5678"
+            routing_number:
+              type: string
