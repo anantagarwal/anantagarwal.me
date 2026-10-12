@@ -2,35 +2,69 @@
 import { slugifyStr } from "@/utils/slugify";
 import type { CollectionEntry } from "astro:content";
 import { getPath } from "@/utils/getPath";
-import Datetime from "./Datetime.astro";
+import { SITE } from "@/config";
 
 export interface Props extends CollectionEntry<"blog"> {
   variant?: "h2" | "h3";
 }
 
 const { variant = "h2", data, id, filePath } = Astro.props;
+const { title, description, pubDatetime, timezone: postTimezone, tags } = data;
 
-const { title, description, pubDatetime, modDatetime, timezone } = data;
+const postDate = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: postTimezone || SITE.timezone,
+}).format(new Date(pubDatetime));
 
-const headerProps = {
-  style: { viewTransitionName: slugifyStr(title) },
-  class: "text-lg font-medium decoration-dashed hover:underline",
-};
+const primaryTag = tags && tags.length > 0 ? tags[0] : "Article";
+
 ---
 
-<li class="my-6">
+<li class="list-none">
   <a
     href={getPath(id, filePath)}
-    class="inline-block text-lg font-medium text-accent decoration-dashed underline-offset-4 focus-visible:no-underline focus-visible:underline-offset-0"
+    class="group relative flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-6 px-4 sm:px-6 py-3.5 transition-colors hover:bg-surface-1"
   >
-    {
-      variant === "h2" ? (
-        <h2 {...headerProps}>{title}</h2>
-      ) : (
-        <h3 {...headerProps}>{title}</h3>
-      )
-    }
+    <div class="flex-1 min-w-0 flex flex-col gap-1">
+      <div class="flex items-center gap-2">
+        <span class="font-mono text-[11px] uppercase tracking-wider text-text-tertiary">
+          {primaryTag}
+        </span>
+      </div>
+
+      {
+        variant === "h2" ? (
+          <h2
+            transition:name={slugifyStr(title)}
+            class="text-left text-[15px] sm:text-[16px] font-medium text-text-primary leading-snug"
+          >
+            <span class="langfuse-highlight">
+              <span>{title}</span>
+            </span>
+          </h2>
+        ) : (
+          <h3
+            transition:name={slugifyStr(title)}
+            class="text-left text-[15px] sm:text-[16px] font-medium text-text-primary leading-snug"
+          >
+            <span class="langfuse-highlight">
+              <span>{title}</span>
+            </span>
+          </h3>
+        )
+      }
+
+      {description && (
+        <p class="text-[13px] text-text-tertiary line-clamp-2 leading-relaxed">
+          {description}
+        </p>
+      )}
+    </div>
+
+    <div class="flex items-center md:flex-col md:items-end gap-1.5 md:gap-0.5 text-text-tertiary font-mono text-[11px] sm:text-[12px] tabular-nums shrink-0 pt-0.5">
+      <span>{postDate}</span>
+    </div>
   </a>
-  <Datetime {pubDatetime} {modDatetime} {timezone} />
-  <p>{description}</p>
 </li>

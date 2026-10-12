@@ -1,5 +1,4 @@
 ---
-import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 ---
 
@@ -13,22 +12,14 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 >
   <button
     data-button="back-to-top"
-    class:list={[
-      "group relative bg-background px-2 py-1",
-      "size-14 rounded-full shadow-xl",
-      "md:h-8 md:w-fit md:rounded-md md:shadow-none md:focus-visible:rounded-none",
-      "md:bg-background/35 md:bg-clip-padding md:backdrop-blur-lg",
-    ]}
+    class="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-line-structure bg-surface-1/90 backdrop-blur-md shadow-sm text-xs font-mono text-text-secondary hover:text-text-primary hover:border-line-cta hover:bg-surface-2 transition-all cursor-pointer"
   >
     <span
       id="progress-indicator"
-      class="absolute inset-0 -z-10 block size-14 scale-110 rounded-full bg-transparent md:hidden md:h-8 md:rounded-md"
+      class="hidden"
     ></span>
-    <IconChevronLeft class="inline-block rotate-90 md:hidden" />
-    <span class="sr-only text-sm group-hover:text-accent md:not-sr-only">
-      <IconArrowNarrowUp class="inline-block size-4" />
-      Back To Top
-    </span>
+    <IconArrowNarrowUp class="inline-block size-3.5" />
+    <span>Top</span>
   </button>
 </div>
 

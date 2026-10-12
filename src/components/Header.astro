@@ -1,12 +1,9 @@
 ---
-import Hr from "./Hr.astro";
 import IconX from "@/assets/icons/IconX.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
-import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
-import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
 
 const { pathname } = Astro.url;
@@ -23,121 +20,132 @@ const isActive = (path: string) => {
 };
 ---
 
-<header>
+<header class="sticky top-0 z-40 bg-surface-bg/95 backdrop-blur-md border-b border-line-structure">
   <a
     id="skip-to-content"
     href="#main-content"
-    class="absolute start-16 -top-full z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4"
+    class="absolute start-16 -top-full z-50 rounded border border-line-structure bg-surface-1 px-3 py-1.5 text-xs font-mono text-text-primary transition-all focus:top-3"
   >
     Skip to content
   </a>
+
+
+  <!-- Primary Navbar -->
   <div
     id="nav-container"
-    class="mx-auto flex max-w-app flex-col items-center justify-between sm:flex-row"
+    class="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3"
   >
-    <div
-      id="top-nav-wrap"
-      class="relative flex w-full items-baseline justify-between bg-background p-4 sm:items-center sm:py-6"
+    <!-- Brand / Wordmark -->
+    <a
+      href="/"
+      class="group flex items-center gap-2 font-semibold text-base sm:text-lg text-text-primary tracking-tight transition-colors"
     >
-      <a
-        href="/"
-        class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
+      <span>Home</span>
+    </a>
+
+    <!-- Nav Links + Actions -->
+    <nav id="nav-menu" class="flex items-center gap-2 sm:gap-4">
+      <button
+        id="menu-btn"
+        class="p-1.5 rounded border border-line-structure text-text-secondary hover:text-text-primary hover:bg-surface-1 sm:hidden cursor-pointer"
+        aria-label="Open Menu"
+        aria-expanded="false"
+        aria-controls="menu-items"
       >
-        {SITE.title}
-      </a>
-      <nav
-        id="nav-menu"
-        class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
+        <IconX id="close-icon" class="hidden size-4" />
+        <IconMenuDeep id="menu-icon" class="size-4" />
+      </button>
+
+      <ul
+        id="menu-items"
+        class:list={[
+          "max-sm:absolute max-sm:top-full max-sm:inset-x-0 max-sm:bg-surface-bg max-sm:border-b max-sm:border-line-structure max-sm:p-4 max-sm:flex-col max-sm:gap-2",
+          "hidden sm:flex sm:items-center sm:gap-1.5",
+        ]}
       >
-        <button
-          id="menu-btn"
-          class="focus-outline self-end p-2 sm:hidden"
-          aria-label="Open Menu"
-          aria-expanded="false"
-          aria-controls="menu-items"
-        >
-          <IconX id="close-icon" class="hidden" />
-          <IconMenuDeep id="menu-icon" />
-        </button>
-        <ul
-          id="menu-items"
+        <li>
+          <a
+            href="/posts"
+            class:list={[
+              "block px-3 py-1.5 text-xs font-mono font-medium rounded transition-colors text-text-tertiary hover:text-text-primary hover:bg-surface-1",
+              { "active-nav !text-text-primary !bg-surface-2": isActive("/posts") },
+            ]}
+          >
+            Posts
+          </a>
+        </li>
+        <li>
+          <a
+            href="/tags"
+            class:list={[
+              "block px-3 py-1.5 text-xs font-mono font-medium rounded transition-colors text-text-tertiary hover:text-text-primary hover:bg-surface-1",
+              { "active-nav !text-text-primary !bg-surface-2": isActive("/tags") },
+            ]}
+          >
+            Tags
+          </a>
+        </li>
+        <li>
+          <a
+            href="/about"
+            class:list={[
+              "block px-3 py-1.5 text-xs font-mono font-medium rounded transition-colors text-text-tertiary hover:text-text-primary hover:bg-surface-1",
+              { "active-nav !text-text-primary !bg-surface-2": isActive("/about") },
+            ]}
+          >
+            About
+          </a>
+        </li>
+        {
+          SITE.showArchives && (
+            <li>
+              <a
+                href="/archives"
+                class:list={[
+                  "block px-3 py-1.5 text-xs font-mono font-medium rounded transition-colors text-text-tertiary hover:text-text-primary hover:bg-surface-1",
+                  { "active-nav !text-text-primary !bg-surface-2": isActive("/archives") },
+                ]}
+                title="Archives"
+              >
+                Archives
+              </a>
+            </li>
+          )
+        }
+      </ul>
+
+      <!-- Action items: Search + Theme Toggle -->
+      <div class="flex items-center gap-2 ms-1 sm:ms-2">
+        <a
+          href="/search"
           class:list={[
-            "mt-4 grid w-44 grid-cols-2 place-content-center gap-2",
-            "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
-            "hidden",
-            "sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
+            "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-text-tertiary hover:text-text-primary rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 transition-colors",
+            { "border-line-cta text-text-primary bg-surface-2": isActive("/search") },
           ]}
+          aria-label="Search"
+          title="Search"
         >
-          <li class="col-span-2">
-            <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-              Posts
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-              Tags
-            </a>
-          </li>
-          <li class="col-span-2">
-            <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-              About
-            </a>
-          </li>
-          {
-            SITE.showArchives && (
-              <li class="col-span-2">
-                <LinkButton
-                  href="/archives"
-                  class:list={[
-                    "focus-outline flex justify-center p-3 sm:p-1",
-                    {
-                      "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                    },
-                  ]}
-                  ariaLabel="archives"
-                  title="Archives"
-                >
-                  <IconArchive class="hidden sm:inline-block" />
-                  <span class="sm:sr-only">Archives</span>
-                </LinkButton>
-              </li>
-            )
-          }
-          <li class="col-span-1 flex items-center justify-center">
-            <LinkButton
-              href="/search"
-              class:list={[
-                "focus-outline flex p-3 sm:p-1",
-                { "[&>svg]:stroke-accent": isActive("/search") },
-              ]}
-              ariaLabel="search"
-              title="Search"
+          <IconSearch class="size-3.5" />
+          <span class="hidden sm:inline">Search</span>
+          <kbd class="hidden md:inline-flex text-[10px] px-1 rounded bg-surface-bg border border-line-structure">⌘K</kbd>
+        </a>
+
+        {
+          SITE.lightAndDarkMode && (
+            <button
+              id="theme-btn"
+              class="relative size-7 flex items-center justify-center rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+              title="Toggle theme"
+              aria-label="Toggle theme"
             >
-              <IconSearch />
-              <span class="sr-only">Search</span>
-            </LinkButton>
-          </li>
-          {
-            SITE.lightAndDarkMode && (
-              <li class="col-span-1 flex items-center justify-center">
-                <button
-                  id="theme-btn"
-                  class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
-                  title="Toggles light & dark"
-                  aria-label="auto"
-                  aria-live="polite"
-                >
-                  <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                  <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                </button>
-              </li>
-            )
-          }
-        </ul>
-      </nav>
-    </div>
+              <IconMoon class="size-3.5 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+              <IconSunHigh class="absolute size-3.5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+            </button>
+          )
+        }
+      </div>
+    </nav>
   </div>
-  <Hr />
 </header>
 
 <script>

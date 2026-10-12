@@ -2,7 +2,6 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import LinkButton from "@/components/LinkButton.astro";
 import { SITE } from "@/config";
 ---
 
@@ -11,18 +10,21 @@ import { SITE } from "@/config";
 
   <main
     id="main-content"
-    class="mx-auto flex max-w-app flex-1 items-center justify-center"
+    class="flex flex-1 items-center justify-center px-4 py-16"
   >
-    <div class="mb-14 flex flex-col items-center justify-center">
-      <h1 class="text-9xl font-bold text-accent">404</h1>
-      <span aria-hidden="true">¯\_(ツ)_/¯</span>
-      <p class="mt-4 text-2xl sm:text-3xl">Page Not Found</p>
-      <LinkButton
+    <div class="flex flex-col items-center justify-center text-center max-w-md">
+      <span class="font-mono text-xs uppercase tracking-wider text-text-tertiary mb-2">Error 404</span>
+      <h1 class="text-6xl sm:text-7xl font-semibold tracking-tight text-text-primary">404</h1>
+      <p class="mt-4 text-lg font-medium text-text-secondary">Page Not Found</p>
+      <p class="mt-2 text-sm text-text-tertiary leading-relaxed">
+        The page you are looking for doesn't exist or has been relocated.
+      </p>
+      <a
         href="/"
-        class="my-6 text-lg underline decoration-dashed underline-offset-8"
+        class="mt-6 inline-flex items-center gap-1.5 px-4 py-2 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-xs font-mono text-text-primary transition-colors"
       >
-        Go back home
-      </LinkButton>
+        <span>&larr; Go back home</span>
+      </a>
     </div>
   </main>
 

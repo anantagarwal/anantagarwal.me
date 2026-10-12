@@ -14,26 +14,11 @@ if (!SITE.showArchives) {
 }
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
-
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 ---
 
 <Layout title={`Archives | ${SITE.title}`}>
   <Header />
-  <Main pageTitle="Archives" pageDesc="All the articles I've archived.">
+  <Main pageTitle="Archives" pageDesc="All published articles chronologically grouped by year.">
     {
       Object.entries(
         getPostsByGroupCondition(posts, post =>
@@ -42,39 +27,25 @@ const months = [
       )
         .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
         .map(([year, yearGroup]) => (
-          <div>
-            <span class="text-2xl font-bold">{year}</span>
-            <sup class="text-sm">{yearGroup.length}</sup>
-            {Object.entries(
-              getPostsByGroupCondition(
-                yearGroup,
-                post => post.data.pubDatetime.getMonth() + 1
-              )
-            )
-              .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
-              .map(([month, monthGroup]) => (
-                <div class="flex flex-col sm:flex-row">
-                  <div class="mt-6 min-w-36 text-lg sm:my-6">
-                    <span class="font-bold">{months[Number(month) - 1]}</span>
-                    <sup class="text-xs">{monthGroup.length}</sup>
-                  </div>
-                  <ul>
-                    {monthGroup
-                      .sort(
-                        (a, b) =>
-                          Math.floor(
-                            new Date(b.data.pubDatetime).getTime() / 1000
-                          ) -
-                          Math.floor(
-                            new Date(a.data.pubDatetime).getTime() / 1000
-                          )
-                      )
-                      .map(data => (
-                        <Card {...data} />
-                      ))}
-                  </ul>
-                </div>
-              ))}
+          <div class="mb-8 rounded-md border border-line-structure bg-surface-bg overflow-hidden shadow-xs">
+            <div class="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-line-structure bg-surface-1/70">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-xs text-text-tertiary">+</span>
+                <span class="font-semibold text-base text-text-primary">{year}</span>
+              </div>
+              <span class="font-mono text-xs text-text-tertiary">[{yearGroup.length}]</span>
+            </div>
+            <ul class="divide-y divide-line-structure">
+              {yearGroup
+                .sort(
+                  (a, b) =>
+                    Math.floor(new Date(b.data.pubDatetime).getTime() / 1000) -
+                    Math.floor(new Date(a.data.pubDatetime).getTime() / 1000)
+                )
+                .map(data => (
+                  <Card {...data} />
+                ))}
+            </ul>
           </div>
         ))
     }

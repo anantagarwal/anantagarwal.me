@@ -3,11 +3,9 @@ import { render, type CollectionEntry } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import Tag from "@/components/Tag.astro";
 import Datetime from "@/components/Datetime.astro";
 import EditPost from "@/components/EditPost.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
-import BackButton from "@/components/BackButton.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
 import { getPath } from "@/utils/getPath";
 import { slugifyStr } from "@/utils/slugify";
@@ -84,82 +82,131 @@ const nextPost =
 
 <Layout {...layoutProps}>
   <Header />
-  <BackButton />
   <main
     id="main-content"
-    class:list={[
-      "mx-auto w-full max-w-app px-4 pb-12",
-      { "mt-8": !SITE.showBackButton },
-    ]}
+    class="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-1"
     data-pagefind-body
   >
-    <h1
-      transition:name={slugifyStr(title)}
-      class="inline-block text-2xl font-bold text-accent sm:text-3xl"
-    >
-      {title}
-    </h1>
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
-      <span
-        aria-hidden="true"
-        class:list={[
-          "max-sm:hidden",
-          { hidden: !SITE.editPost.enabled || hideEditPost },
-        ]}>|</span
+    <!-- Langfuse Top Post Breadcrumb Bar -->
+    <div class="flex items-center justify-between pb-4 border-b border-line-structure mb-6 text-xs font-mono text-text-tertiary">
+      <a
+        id="back-button"
+        href="/posts"
+        class="inline-flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
       >
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+        <span>&larr;</span>
+        <span>Back to posts</span>
+      </a>
+      {
+        tags.length > 0 && (
+          <span class="uppercase tracking-wider px-2 py-0.5 rounded border border-line-structure bg-surface-1 text-text-secondary">
+            {tags[0]}
+          </span>
+        )
+      }
     </div>
+
+    <!-- Post Header -->
+    <div class="mb-8 flex flex-col gap-2">
+      <div class="flex flex-wrap items-center gap-2 text-xs font-mono text-text-tertiary mb-1">
+        <Datetime {pubDatetime} {modDatetime} {timezone} size="sm" />
+        {
+          SITE.editPost.enabled && !hideEditPost && (
+            <>
+              <span>·</span>
+              <EditPost {hideEditPost} {post} />
+            </>
+          )
+        }
+      </div>
+
+      <h1
+        transition:name={slugifyStr(title)}
+        class="text-2xl sm:text-4xl lg:text-[2.6rem] font-semibold tracking-tight text-text-primary leading-[1.2]"
+      >
+        {title}
+      </h1>
+
+      {
+        description && (
+          <p class="text-base sm:text-lg text-text-secondary leading-relaxed mt-2 font-normal">
+            {description}
+          </p>
+        )
+      }
+    </div>
+
+    <div class="border-b border-line-structure mb-8"></div>
+
+    <!-- Article Content -->
     <article
       id="article"
-      class="app-prose mx-auto mt-8 max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+      class="app-prose w-full"
     >
       <Content />
     </article>
 
-    <hr class="my-8 border-dashed" />
+    <div class="my-8 border-t border-line-structure"></div>
 
-    <EditPost class="sm:hidden" {hideEditPost} {post} />
-
-    <ul class="mt-4 mb-8 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
-    </ul>
+    <!-- Post Tags -->
+    {
+      tags.length > 0 && (
+        <div class="my-6 flex flex-wrap gap-2 items-center">
+          <span class="font-mono text-xs text-text-tertiary">Tags:</span>
+          {tags.map(tag => (
+            <a
+              href={`/tags/${slugifyStr(tag)}/`}
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 font-mono text-xs text-text-secondary hover:text-text-primary transition-colors"
+            >
+              <span>#</span>
+              <span>{tag}</span>
+            </a>
+          ))}
+        </div>
+      )
+    }
 
     <BackToTopButton />
 
-    <ShareLinks />
+    <div class="my-6">
+      <ShareLinks />
+    </div>
 
-    <hr class="my-6 border-dashed" />
+    <div class="my-8 border-t border-line-structure"></div>
 
-    <!-- Previous/Next Post Buttons -->
-    <div data-pagefind-ignore class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <!-- Previous/Next Post Cards (Langfuse Grid Style) -->
+    <div data-pagefind-ignore class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
       {
-        prevPost && (
+        prevPost ? (
           <a
             href={getPath(prevPost.id, prevPost.filePath)}
-            class="flex w-full gap-1 hover:opacity-75"
+            class="group p-4 rounded-md border border-line-structure bg-surface-bg hover:border-line-cta hover:bg-surface-1 transition-colors flex flex-col gap-1.5"
           >
-            <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
-            <div>
-              <span>Previous Post</span>
-              <div class="text-sm text-accent/85">{prevPost.title}</div>
+            <div class="flex items-center gap-1.5 text-xs font-mono text-text-tertiary">
+              <IconChevronLeft class="size-3.5 rtl:rotate-180" />
+              <span>Previous Article</span>
+            </div>
+            <div class="text-sm font-medium text-text-primary group-hover:text-text-primary line-clamp-2">
+              {prevPost.title}
             </div>
           </a>
-        )
+        ) : <div />
       }
       {
-        nextPost && (
+        nextPost ? (
           <a
             href={getPath(nextPost.id, nextPost.filePath)}
-            class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
+            class="group p-4 rounded-md border border-line-structure bg-surface-bg hover:border-line-cta hover:bg-surface-1 transition-colors flex flex-col items-end gap-1.5 text-right sm:col-start-2"
           >
-            <div>
-              <span>Next Post</span>
-              <div class="text-sm text-accent/85">{nextPost.title}</div>
+            <div class="flex items-center gap-1.5 text-xs font-mono text-text-tertiary">
+              <span>Next Article</span>
+              <IconChevronRight class="size-3.5 rtl:rotate-180" />
             </div>
-            <IconChevronRight class="inline-block flex-none rtl:rotate-180" />
+            <div class="text-sm font-medium text-text-primary group-hover:text-text-primary line-clamp-2">
+              {nextPost.title}
+            </div>
           </a>
-        )
+        ) : <div />
       }
     </div>
   </main>
@@ -173,11 +220,11 @@ const nextPost =
     // Create the main container div
     const progressContainer = document.createElement("div");
     progressContainer.className =
-      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
+      "progress-container fixed top-0 z-50 h-0.5 w-full bg-surface-1/40";
 
     // Create the progress bar div
     const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar h-1 w-0 bg-accent";
+    progressBar.className = "progress-bar h-0.5 w-0 bg-[#fbff81]";
     progressBar.id = "myBar";
 
     // Append the progress bar to the progress container
@@ -210,11 +257,13 @@ const nextPost =
 
   /** Attaches links to headings in the document,
    *  allowing sharing of sections easily */
+  /** Add anchor links to headings */
   function addHeadingLinks() {
     const headings = Array.from(
       document.querySelectorAll("h2, h3, h4, h5, h6")
     );
     for (const heading of headings) {
+      if (heading.querySelector(".heading-link")) continue;
       heading.classList.add("group");
       const link = document.createElement("a");
       link.className =
@@ -228,15 +277,19 @@ const nextPost =
       heading.appendChild(link);
     }
   }
-  addHeadingLinks();
 
   /** Attaches copy buttons to code blocks in the document,
    * allowing users to copy code easily. */
   function attachCopyButtons() {
     const copyButtonLabel = "Copy";
-    const codeBlocks = Array.from(document.querySelectorAll("pre"));
+    const codeBlocks = Array.from(
+      document.querySelectorAll("pre:not(.mermaid)")
+    );
 
     for (const codeBlock of codeBlocks) {
+      if (codeBlock.hasAttribute("data-copy-attached")) continue;
+      codeBlock.setAttribute("data-copy-attached", "true");
+
       const wrapper = document.createElement("div");
       wrapper.style.position = "relative";
 
@@ -251,7 +304,7 @@ const nextPost =
         : "-top-3";
 
       const copyButton = document.createElement("button");
-      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-surface-1 border border-line-structure hover:border-line-cta hover:bg-surface-2 px-2 py-0.5 text-[11px] font-mono leading-4 text-text-secondary hover:text-text-primary transition-colors cursor-pointer`;
       copyButton.innerHTML = copyButtonLabel;
       codeBlock.setAttribute("tabindex", "0");
       codeBlock.appendChild(copyButton);
@@ -279,7 +332,6 @@ const nextPost =
       }, 700);
     }
   }
-  attachCopyButtons();
 
   /** Initialize Mermaid and render diagrams dynamically.
    * Reads CSS custom properties so diagrams adapt to light/dark themes.
@@ -288,62 +340,28 @@ const nextPost =
     const elements = document.querySelectorAll("pre.mermaid");
     if (elements.length === 0) return;
 
+    // Wait for web fonts (Inter) to be ready so Mermaid calculates precise text dimensions
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
     // Dynamically load Mermaid library
     const { default: mermaid } = await import(
       "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
     );
 
-    /** Read CSS custom properties and build a mermaid config object */
+    /** Build a mermaid config object using official defaults */
     function getMermaidConfig() {
-      const styles = getComputedStyle(document.documentElement);
-      const v = name => styles.getPropertyValue(name).trim();
       const isDark =
         document.documentElement.getAttribute("data-theme") === "dark";
 
-      const textColor = v("--mermaid-text");
-      const subgraphBg = v("--mermaid-subgraph-bg");
-
       return {
         startOnLoad: false,
-        theme: "base",
+        theme: isDark ? "dark" : "default",
         securityLevel: "loose",
+        fontFamily: "Inter, system-ui, -apple-system, sans-serif",
         themeVariables: {
-          primaryColor: v("--mermaid-primary"),
-          primaryBorderColor: v("--mermaid-primary-border"),
-          primaryTextColor: textColor,
-          secondaryColor: v("--mermaid-secondary"),
-          secondaryBorderColor: v("--mermaid-secondary-border"),
-          secondaryTextColor: textColor,
-          tertiaryColor: isDark ? "#1e293b" : "#f5f5f5",
-          tertiaryBorderColor: v("--mermaid-subgraph-border"),
-          tertiaryTextColor: textColor,
-          lineColor: v("--mermaid-line"),
-          textColor: textColor,
-          mainBkg: v("--mermaid-primary"),
-          nodeBorder: v("--mermaid-primary-border"),
-          nodeTextColor: textColor,
-          clusterBkg: subgraphBg,
-          clusterBorder: v("--mermaid-subgraph-border"),
-          titleColor: textColor,
-          edgeLabelBackground: subgraphBg,
-          fontSize: "14px",
-          /* Sequence diagram specific */
-          actorBkg: v("--mermaid-primary"),
-          actorBorder: v("--mermaid-primary-border"),
-          actorTextColor: textColor,
-          actorLineColor: v("--mermaid-line"),
-          signalColor: v("--mermaid-line"),
-          signalTextColor: textColor,
-          labelBoxBkgColor: v("--mermaid-primary"),
-          labelBoxBorderColor: v("--mermaid-primary-border"),
-          labelTextColor: textColor,
-          loopTextColor: textColor,
-          noteBkgColor: v("--mermaid-secondary"),
-          noteBorderColor: v("--mermaid-secondary-border"),
-          noteTextColor: textColor,
-          activationBorderColor: v("--mermaid-primary-border"),
-          activationBkgColor: v("--mermaid-primary"),
-          sequenceNumberColor: textColor,
+          fontFamily: "Inter, system-ui, -apple-system, sans-serif",
         },
       };
     }
@@ -357,7 +375,7 @@ const nextPost =
         const { svg } = await mermaid.render(id, code);
         const container = document.createElement("div");
         container.className =
-          "mermaid-container my-6 flex justify-center w-full overflow-x-auto";
+          "mermaid-container not-prose my-8 flex justify-center w-full overflow-x-auto";
         container.setAttribute("data-original-code", code);
         container.innerHTML = svg;
         element.replaceWith(container);
@@ -403,10 +421,22 @@ const nextPost =
       attributeFilter: ["data-theme"],
     });
   }
-  initMermaid();
 
-  /* Go to page start after page swap */
-  document.addEventListener("astro:after-swap", () =>
-    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
-  );
+  function updateGoBackUrl() {
+    const backButton = document.querySelector("#back-button");
+    const backUrl = sessionStorage.getItem("backUrl");
+    if (backUrl && backButton) {
+      backButton.href = backUrl;
+    }
+  }
+
+  async function setupPage() {
+    addHeadingLinks();
+    await initMermaid();
+    attachCopyButtons();
+    updateGoBackUrl();
+  }
+
+  document.addEventListener("astro:page-load", setupPage);
+  setupPage();
 </script>

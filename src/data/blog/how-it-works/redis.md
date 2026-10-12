@@ -9,14 +9,14 @@ tags:
   - how-it-works
   - systems-architecture
   - databases
-description: "A focused, systems-level look at how Redis handles massive concurrency on a single thread—exploring non-blocking I/O, Linux epoll, and the core event loop without drowning in C code."
+description: "A focused, systems-level look at how Redis handles massive concurrency on a single thread-exploring non-blocking I/O, Linux epoll, and the core event loop without drowning in C code."
 ---
 
 Redis is renowned for processing over 100,000 operations per second while running its core execution engine on a **single thread**.
 
 At first glance, this sounds counterintuitive. Conventional software wisdom tells us to spawn multiple threads to handle thousands of concurrent client connections. Yet, Redis intentionally avoids multi-threaded execution for its core logic.
 
-How can a single thread serve thousands of concurrent clients without stalling? The secret lies in **operating system I/O multiplexing**—specifically Linux's `epoll`—paired with an in-memory event loop.
+How can a single thread serve thousands of concurrent clients without stalling? The secret lies in **operating system I/O multiplexing**-specifically Linux's `epoll`-paired with an in-memory event loop.
 
 ## Table of contents
 
@@ -82,8 +82,8 @@ Operating systems provide multiplexing mechanisms so a single thread can monitor
 ### The Evolution: `select` vs. `epoll`
 
 Early Unix systems used `select()` and `poll()`:
-- **`select()` / `poll()` ($O(N)$)**: You hand an array of all monitored sockets to the kernel. Every time you check, the kernel scans through every socket in the list. Even if only 1 socket out of 10,000 has data, the CPU still iterates through all 10,000.
-- **`epoll` ($O(1)$ on Linux)**: Introduced in Linux 2.6, `epoll` completely changes the mechanism by being **event-driven**.
+- **`select()` / `poll()` (`O(N)`)**: You hand an array of all monitored sockets to the kernel. Every time you check, the kernel scans through every socket in the list. Even if only 1 socket out of 10,000 has data, the CPU still iterates through all 10,000.
+- **`epoll` (`O(1)` on Linux)**: Introduced in Linux 2.6, `epoll` completely changes the mechanism by being **event-driven**.
 
 ```mermaid
 graph TD
@@ -116,7 +116,7 @@ graph TD
 
 1. **`epoll_create()`**: Creates an epoll instance in the kernel and returns a file descriptor referencing it.
 2. **`epoll_ctl()`**: Adds, modifies, or removes socket descriptors in the interest list. When a socket is registered (e.g., listening for readable `EPOLLIN` or writable `EPOLLOUT` events), the kernel tracks it in an efficient Red-Black tree.
-3. **`epoll_wait()`**: Suspends the calling thread until one or more monitored sockets have events ready. When a network packet arrives, the network card triggers an interrupt, and the OS puts that specific socket onto a **Ready List**. `epoll_wait()` returns *only* the ready sockets in $O(1)$ time relative to total connections.
+3. **`epoll_wait()`**: Suspends the calling thread until one or more monitored sockets have events ready. When a network packet arrives, the network card triggers an interrupt, and the OS puts that specific socket onto a **Ready List**. `epoll_wait()` returns *only* the ready sockets in `O(1)` time relative to total connections.
 
 *(Note: On macOS and BSD systems, Redis uses `kqueue`, which operates on the same event-driven principle).*
 
@@ -133,13 +133,13 @@ graph TD
   Start([Start Loop Iteration]) --> EpollWait["1. Call epoll_wait(timeout)"]
   EpollWait --> HasEvents{Any ready events?}
   
-  HasEvents -- No --> EpollWait
-  HasEvents -- Yes --> ProcessEvents["2. Process Ready File Descriptors"]
+  HasEvents -->|No| EpollWait
+  HasEvents -->|Yes| ProcessEvents["2. Process Ready File Descriptors"]
   
   ProcessEvents --> CheckType{Event Type}
-  CheckType -- "Server Socket (New Connection)" --> Accept["accept() & register client fd with epoll_ctl()"]
-  CheckType -- "Client Socket (Readable)" --> ReadParse["read() bytes, parse RESP, execute in RAM"]
-  CheckType -- "Client Socket (Writable)" --> WriteOut["write() buffered response back to client"]
+  CheckType -->|"Server Socket (New Connection)"| Accept["accept() & register client fd with epoll_ctl()"]
+  CheckType -->|"Client Socket (Readable)"| ReadParse["read() bytes, parse RESP, execute in RAM"]
+  CheckType -->|"Client Socket (Writable)"| WriteOut["write() buffered response back to client"]
   
   Accept --> TimeEvents["3. Process Time Events (cron, expiry)"]
   ReadParse --> TimeEvents
@@ -306,8 +306,8 @@ Notice what makes this model so powerful:
 The single-threaded event loop is exceptionally fast, but it has one famous vulnerability: **Head-of-Line Blocking**.
 
 Because every query runs sequentially on the main thread:
-- If a client runs a fast $O(1)$ command like `GET key` or `SET key val`, Redis finishes in microseconds.
-- If a client runs a slow $O(N)$ command like `KEYS *` over a 50-million-key database, or deletes a massive set with millions of elements, **the single execution thread freezes**.
+- If a client runs a fast `O(1)` command like `GET key` or `SET key val`, Redis finishes in microseconds.
+- If a client runs a slow `O(N)` command like `KEYS *` over a 50-million-key database, or deletes a massive set with millions of elements, **the single execution thread freezes**.
 
 While that single command runs, `epoll_wait()` is not called, no other socket reads take place, and every other client's request sits waiting in the OS network queue.
 
@@ -321,7 +321,7 @@ This is why Redis best practices strongly advise:
 
 While Redis's *core command execution* is strictly single-threaded, modern Redis is not completely single-threaded:
 
-1. **Background I/O Threads (BIO)**: Heavy, slow tasks—such as flushing data to disk (`fsync`), closing file descriptors, and lazy-freeing large memory allocations—are delegated to separate background threads so the main loop is never held up.
+1. **Background I/O Threads (BIO)**: Heavy, slow tasks-such as flushing data to disk (`fsync`), closing file descriptors, and lazy-freeing large memory allocations-are delegated to separate background threads so the main loop is never held up.
 2. **Threaded I/O (Redis 6+)**: Reading bytes off TCP sockets and parsing RESP protocol payloads can consume CPU on high-throughput 100GbE networks. Redis 6 introduced multi-threaded network I/O: worker threads read and write network buffers, but **the actual command execution on data remains strictly single-threaded**.
 
 ---
@@ -330,7 +330,7 @@ While Redis's *core command execution* is strictly single-threaded, modern Redis
 
 The design choices in Redis reflect fundamental patterns found across high-performance systems:
 
-- **Node.js & Nginx**: Both rely on the exact same pattern—a single execution thread (or event-driven worker processes) running an event loop on top of OS I/O multiplexing (`epoll` via `libuv` in Node.js, and native `epoll` in Nginx). They demonstrate that non-blocking event loops excel whenever workloads are I/O-bound rather than compute-bound.
+- **Node.js & Nginx**: Both rely on the exact same pattern-a single execution thread (or event-driven worker processes) running an event loop on top of OS I/O multiplexing (`epoll` via `libuv` in Node.js, and native `epoll` in Nginx). They demonstrate that non-blocking event loops excel whenever workloads are I/O-bound rather than compute-bound.
 - **Netty & Java Frameworks**: High-throughput networking frameworks like Netty use non-blocking Java NIO channels and selectors (backed by `epoll` on Linux) to serve tens of thousands of concurrent connections without the overhead of traditional thread-per-connection pools.
 - **Dragonfly & KeyDB (Thread-Per-Core)**: Modern in-memory stores evolve Redis's design for multi-core machines by adopting a **shared-nothing, thread-per-core architecture**. Instead of introducing global locks and mutexes across shared memory, each CPU core runs its own dedicated event loop and manages an isolated partition of the keyspace.
 
@@ -342,11 +342,11 @@ These architectural principles form the backbone of modern cloud infrastructure 
 
 Redis doesn't achieve its legendary throughput by using complex thread synchronization. Instead, it pairs:
 
-1. **Non-blocking sockets** configured with Linux `epoll` for efficient, $O(1)$ event notifications.
+1. **Non-blocking sockets** configured with Linux `epoll` for efficient, `O(1)` event notifications.
 2. A single-threaded **event loop** that guarantees zero lock contention and zero context switching overhead.
 3. Pure **in-memory data execution** that ensures commands finish in nanoseconds before moving to the next client.
 
-By letting the operating system handle connection monitoring and keeping execution strictly in RAM, Redis proves that a single thread—designed right—can easily outperform massive thread pools.
+By letting the operating system handle connection monitoring and keeping execution strictly in RAM, Redis proves that a single thread-designed right-can easily outperform massive thread pools.
 
 ---
 

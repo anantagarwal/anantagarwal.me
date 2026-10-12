@@ -1,64 +1,83 @@
 @plugin '@tailwindcss/typography';
 
 @layer base {
-  /* ===== Override default Tailwind Typography styles ===== */
+  /* ===== Override default Tailwind Typography styles to match Langfuse ===== */
   .app-prose {
-    @apply prose;
+    @apply prose max-w-none;
 
     h1,
     h2,
     h3,
     h4,
     th {
-      @apply mb-3 text-foreground;
+      @apply text-text-primary font-medium tracking-tight;
+    }
+
+    h2 {
+      @apply border-b border-line-structure pb-2.5 mt-10 mb-4 text-xl sm:text-2xl font-semibold;
     }
 
     h3 {
-      @apply italic;
+      @apply mt-8 mb-3 text-lg sm:text-xl font-medium not-italic;
+    }
+
+    h4 {
+      @apply mt-6 mb-2 text-base sm:text-lg font-medium;
     }
 
     p,
-    strong,
     ol,
     ul,
-    figcaption,
-    table,
-    code {
-      @apply text-foreground;
+    figcaption {
+      @apply text-text-secondary leading-[1.75] text-[16px] sm:text-[17px];
+    }
+
+    strong {
+      @apply text-text-primary font-semibold;
     }
 
     a {
-      @apply break-words text-foreground decoration-dashed underline-offset-4 hover:text-accent focus-visible:no-underline;
+      @apply break-words text-text-primary underline decoration-line-structure hover:decoration-text-primary underline-offset-4 font-medium transition-colors;
     }
 
     ul {
-      @apply overflow-x-clip;
+      @apply overflow-x-clip list-disc list-outside ps-5 space-y-2 my-5;
+    }
+
+    ol {
+      @apply list-decimal list-outside ps-5 space-y-2 my-5;
     }
 
     li {
-      @apply marker:text-accent;
+      @apply marker:text-text-tertiary;
     }
 
     hr {
-      @apply border-border;
+      @apply border-line-structure my-8;
     }
 
     img {
-      @apply mx-auto border border-border;
+      @apply mx-auto rounded-md border border-line-structure shadow-xs my-6;
     }
 
     figcaption {
-      @apply opacity-75;
+      @apply text-center text-xs text-text-tertiary font-mono mt-2;
     }
 
     table {
+      @apply w-full border-collapse border border-line-structure my-6 text-sm overflow-hidden rounded-md;
+
       th,
       td {
-        @apply border border-border p-2;
+        @apply border border-line-structure p-3 text-left;
       }
 
       th {
-        @apply py-1.5;
+        @apply bg-surface-1 font-mono text-xs uppercase tracking-wider text-text-primary py-2.5;
+      }
+
+      td {
+        @apply text-text-secondary bg-surface-bg;
       }
 
       code {
@@ -67,53 +86,77 @@
     }
 
     code {
-      @apply rounded bg-muted/75 p-1 break-words text-foreground before:content-none after:content-none;
+      @apply rounded bg-surface-1 px-1.5 py-0.5 font-mono text-[13.5px] text-text-primary border border-line-structure before:content-none after:content-none;
     }
 
     .astro-code code {
-      @apply flex-[1_0_100%] bg-inherit p-0;
+      @apply flex-[1_0_100%] bg-inherit p-0 border-none rounded-none;
     }
 
     blockquote {
-      @apply border-s-accent/80 break-words opacity-80;
+      @apply border-s-2 border-line-cta bg-surface-1/40 pl-4 py-2.5 my-5 rounded-r text-text-secondary italic;
     }
 
     details {
-      @apply inline-block cursor-pointer text-foreground select-none [&_p]:hidden [&_ul]:!my-0;
+      @apply inline-block cursor-pointer text-text-primary select-none rounded border border-line-structure bg-surface-1 p-3 my-3 w-full [&_p]:hidden [&_ul]:!my-0;
     }
 
     summary {
-      @apply focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent focus-visible:outline-dashed;
+      @apply font-mono text-xs uppercase tracking-wider text-text-tertiary font-medium cursor-pointer hover:text-text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-cta;
     }
 
     pre {
-      @apply focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-dashed;
+      @apply border border-line-structure rounded-md my-5 p-4 sm:p-5 text-[13.5px] font-mono leading-relaxed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-cta;
     }
   }
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply flex border bg-(--shiki-light-bg) text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
+    @apply flex border border-line-structure rounded-md p-4 sm:p-5 bg-surface-1 font-mono text-[13.5px] leading-relaxed overflow-x-auto shadow-xs;
+  }
+
+  /* Shiki syntax highlighting token colors */
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-light, inherit);
   }
 
   html[data-theme="dark"] .astro-code {
-    @apply bg-(--shiki-dark-bg) text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+    @apply bg-surface-code border-line-structure;
+  }
+
+  html[data-theme="dark"] .astro-code,
+  html[data-theme="dark"] .astro-code span {
+    color: var(--shiki-dark, inherit);
   }
 
   /* Styles for Shiki transformers */
-  /* https://shiki.style/packages/transformers */
   .astro-code {
     .line.diff.add {
-      @apply relative inline-block w-full bg-green-400/20 before:absolute before:-left-3 before:text-green-500 before:content-['+'];
+      @apply relative inline-block w-full bg-emerald-500/15 before:absolute before:-left-3 before:text-emerald-500 before:content-['+'];
     }
     .line.diff.remove {
-      @apply relative inline-block w-full bg-red-500/20 before:absolute before:-left-3 before:text-red-500 before:content-['-'];
+      @apply relative inline-block w-full bg-rose-500/15 before:absolute before:-left-3 before:text-rose-500 before:content-['-'];
     }
     .line.highlighted {
-      @apply inline-block w-full bg-slate-400/20;
+      @apply inline-block w-full bg-surface-2/60;
     }
     .highlighted-word {
-      @apply rounded-sm border border-border px-0.5 py-px;
+      @apply rounded-sm border border-line-structure px-1 py-0.5 bg-surface-2;
     }
+  }
+
+  /* ===== Mermaid Diagrams Styling ===== */
+  .mermaid-container {
+    @apply my-8 flex justify-center w-full overflow-x-auto;
+  }
+
+  .mermaid-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .mermaid-container foreignObject {
+    overflow: visible;
   }
 }

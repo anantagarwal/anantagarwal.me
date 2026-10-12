@@ -5,81 +5,145 @@
 
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --muted: #e6e6e6;
-  --border: #ece9e9;
+  /* Langfuse Light Palette */
+  --surface-bg: #f6f6f3;
+  --surface-1: #edede8;
+  --surface-2: #e5e5e1;
+  --surface-code: #202022;
+  --surface-cta-primary: #fbff81;
+  --surface-beige-accent: #f1ede1;
 
-  /* Mermaid theme variables */
-  --mermaid-primary: #e3f2fd;
-  --mermaid-primary-border: #1e88e5;
-  --mermaid-secondary: #fff3e0;
-  --mermaid-secondary-border: #fb8c00;
-  --mermaid-line: #546e7a;
-  --mermaid-text: #282728;
-  --mermaid-subgraph-bg: #f9f9f9;
-  --mermaid-subgraph-border: #ece9e9;
+  --line-structure: #cfcfc9;
+  --line-divider-dash: #bebeb6;
+  --line-cta: #404039;
+
+  --text-primary: #222220;
+  --text-secondary: #3d3d38;
+  --text-tertiary: #6b6b66;
+  --text-disabled: #a7a7a0;
+  --text-links: #4f39f6;
+
+  /* Backward-compatibility aliases for AstroPaper components */
+  --background: var(--surface-bg);
+  --foreground: var(--text-primary);
+  --accent: var(--text-primary);
+  --accent-highlight: #fbff81;
+  --muted: var(--surface-2);
+  --border: var(--line-structure);
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --muted: #343f60;
-  --border: #ab4b08;
+  /* Langfuse Dark Palette */
+  --surface-bg: #171714;
+  --surface-1: #1e1e1b;
+  --surface-2: #252522;
+  --surface-code: #0e0e0c;
+  --surface-cta-primary: #4c4d23;
+  --surface-beige-accent: #252522;
 
-  /* Mermaid theme variables */
-  --mermaid-primary: #293548;
-  --mermaid-primary-border: #3b82f6;
-  --mermaid-secondary: #3d2a15;
-  --mermaid-secondary-border: #f97316;
-  --mermaid-line: #94a3b8;
-  --mermaid-text: #eaedf3;
-  --mermaid-subgraph-bg: #1e2535;
-  --mermaid-subgraph-border: #334155;
+  --line-structure: #2c2c29;
+  --line-divider-dash: #232320;
+  --line-cta: #b8b6a0;
+
+  --text-primary: #e8e8e4;
+  --text-secondary: #b4b4ae;
+  --text-tertiary: #7a7a74;
+  --text-disabled: #4a4a45;
+  --text-links: #7b8ff8;
+
+  /* Backward-compatibility aliases for AstroPaper components */
+  --background: var(--surface-bg);
+  --foreground: var(--text-primary);
+  --accent: var(--text-primary);
+  --accent-highlight: #fbff81;
+  --muted: var(--surface-2);
+  --border: var(--line-structure);
 }
 
 @theme inline {
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-surface-bg: var(--surface-bg);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-code: var(--surface-code);
+  --color-surface-cta-primary: var(--surface-cta-primary);
+  --color-surface-beige-accent: var(--surface-beige-accent);
+
+  --color-line-structure: var(--line-structure);
+  --color-line-divider-dash: var(--line-divider-dash);
+  --color-line-cta: var(--line-cta);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-links: var(--text-links);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
+  --color-accent-highlight: var(--accent-highlight);
   --color-muted: var(--muted);
   --color-border: var(--border);
 }
 
 @layer base {
   * {
-    @apply border-border outline-accent/75;
-    scrollbar-width: auto;
-    scrollbar-color: var(--color-muted) transparent;
+    @apply border-line-structure;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-structure) transparent;
   }
   html {
-    @apply overflow-y-scroll scroll-smooth;
+    @apply overflow-y-scroll scroll-smooth bg-surface-bg;
   }
   body {
-    @apply flex min-h-svh flex-col bg-background font-mono text-foreground selection:bg-accent/75 selection:text-background;
+    @apply flex min-h-svh flex-col bg-surface-bg font-sans text-text-primary antialiased selection:bg-[#fbff81] selection:text-black dark:selection:bg-[#fbff81] dark:selection:text-black;
   }
   a,
   button {
-    @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+    @apply outline-none focus-visible:ring-1 focus-visible:ring-line-cta;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
-  section,
-  footer {
-    @apply mx-auto max-w-app px-4;
-  }
-}
-
-@utility max-w-app {
-  @apply max-w-5xl;
 }
 
 .active-nav {
-  @apply underline decoration-wavy decoration-2 underline-offset-4;
+  @apply bg-surface-2 text-text-primary font-semibold;
+}
+
+/* Langfuse Signature Neon Highlighter Animation */
+.langfuse-highlight {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.langfuse-highlight::before {
+  content: "";
+  position: absolute;
+  inset-inline: -2px;
+  top: 50%;
+  height: 0.74em;
+  transform: translateY(-50%) scaleX(0);
+  background-color: #fbff81;
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+  border-radius: 2px;
+}
+:where([data-theme="dark"]) .langfuse-highlight::before {
+  background-color: rgba(251, 255, 129, 0.25);
+}
+.group:hover .langfuse-highlight::before,
+a:hover .langfuse-highlight::before {
+  transform: translateY(-50%) scaleX(1);
+}
+.langfuse-highlight > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */
@@ -88,143 +152,3 @@ html[data-theme="dark"] {
   scroll-margin-block: 1rem;
 }
 
-/* ==========================================================================
-   Mermaid Diagrams Styling (Mermaid v11)
-   
-   v11 renders node/edge labels inside <foreignObject> as HTML elements
-   (span.nodeLabel, span.edgeLabel, p tags) — NOT SVG <text> elements.
-   We must use `color` for HTML text and `fill` for SVG text (sequence
-   diagrams still use SVG text elements).
-   ========================================================================== */
-
-.mermaid-container svg {
-  background: transparent !important;
-}
-
-/* ---------- Subgraphs / Clusters ---------- */
-.mermaid-container .cluster rect,
-.mermaid-container .subgraph rect {
-  fill: var(--mermaid-subgraph-bg) !important;
-  stroke: var(--mermaid-subgraph-border) !important;
-  stroke-width: 1.5px !important;
-}
-.mermaid-container .cluster-label .nodeLabel,
-.mermaid-container .subgraph-title {
-  color: var(--mermaid-text) !important;
-  fill: var(--mermaid-text) !important;
-  font-weight: bold !important;
-}
-
-/* ---------- All text (catch-all) ---------- */
-/* SVG <text> elements (sequence diagrams, autonumber, etc.) */
-.mermaid-container text {
-  fill: var(--mermaid-text) !important;
-}
-/* HTML text inside foreignObject (flowchart nodes, edge labels) */
-.mermaid-container foreignObject {
-  color: var(--mermaid-text) !important;
-}
-.mermaid-container .nodeLabel,
-.mermaid-container .labelText,
-.mermaid-container .label {
-  color: var(--mermaid-text) !important;
-  fill: var(--mermaid-text) !important;
-}
-.mermaid-container .nodeLabel p,
-.mermaid-container .edgeLabel p,
-.mermaid-container .label p {
-  color: var(--mermaid-text) !important;
-}
-
-/* ---------- Node Styling via classDef ---------- */
-/* In mermaid v11 DOM: <g class="node control"> or <g class="node data"> */
-.mermaid-container .node.control > :is(rect, circle, polygon, path, ellipse),
-.mermaid-container .node.control .basic {
-  fill: var(--mermaid-primary) !important;
-  stroke: var(--mermaid-primary-border) !important;
-}
-
-.mermaid-container .node.data > :is(rect, circle, polygon, path, ellipse),
-.mermaid-container .node.data .basic {
-  fill: var(--mermaid-secondary) !important;
-  stroke: var(--mermaid-secondary-border) !important;
-}
-
-/* ---------- Edges / Connectors ---------- */
-.mermaid-container .edgePath .path,
-.mermaid-container .flowchart-link {
-  stroke: var(--mermaid-line) !important;
-  stroke-width: 1.5px !important;
-}
-.mermaid-container marker path {
-  fill: var(--mermaid-line) !important;
-  stroke: var(--mermaid-line) !important;
-}
-
-/* ---------- Edge Labels ---------- */
-.mermaid-container .edgeLabel {
-  background-color: var(--mermaid-subgraph-bg) !important;
-  color: var(--mermaid-text) !important;
-}
-.mermaid-container .edgeLabel rect,
-.mermaid-container .labelBkg {
-  fill: var(--mermaid-subgraph-bg) !important;
-  opacity: 1 !important;
-}
-.mermaid-container .edgeLabel span,
-.mermaid-container .edgeLabel p {
-  color: var(--mermaid-text) !important;
-  background: var(--mermaid-subgraph-bg) !important;
-}
-
-/* ---------- Sequence Diagrams ---------- */
-.mermaid-container .actor {
-  fill: var(--mermaid-primary) !important;
-  stroke: var(--mermaid-primary-border) !important;
-}
-.mermaid-container .actor text {
-  fill: var(--mermaid-text) !important;
-}
-.mermaid-container .actor-line {
-  stroke: var(--mermaid-line) !important;
-}
-.mermaid-container .messageLine0,
-.mermaid-container .messageLine1 {
-  stroke: var(--mermaid-line) !important;
-}
-.mermaid-container .messageText {
-  fill: var(--mermaid-text) !important;
-  color: var(--mermaid-text) !important;
-}
-.mermaid-container .note {
-  fill: var(--mermaid-secondary) !important;
-  stroke: var(--mermaid-secondary-border) !important;
-}
-.mermaid-container .noteText {
-  fill: var(--mermaid-text) !important;
-}
-.mermaid-container .activation0,
-.mermaid-container .activation1,
-.mermaid-container .activation2 {
-  fill: var(--mermaid-primary) !important;
-  stroke: var(--mermaid-primary-border) !important;
-}
-.mermaid-container .loopLine {
-  stroke: var(--mermaid-line) !important;
-}
-.mermaid-container .loopText,
-.mermaid-container .loopText tspan {
-  fill: var(--mermaid-text) !important;
-}
-.mermaid-container .labelBox {
-  fill: var(--mermaid-primary) !important;
-  stroke: var(--mermaid-primary-border) !important;
-}
-
-/* Autonumber badges */
-.mermaid-container .sequenceNumber {
-  fill: var(--background) !important;
-}
-.mermaid-container rect.sequenceNumber {
-  fill: var(--mermaid-line) !important;
-}

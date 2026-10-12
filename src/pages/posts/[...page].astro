@@ -8,6 +8,7 @@ import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import Pagination from "@/components/Pagination.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
+import getUniqueTags from "@/utils/getUniqueTags";
 import { SITE } from "@/config";
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -16,14 +17,42 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
+const tags = getUniqueTags(allPosts);
 ---
 
 <Layout title={`Posts | ${SITE.title}`}>
   <Header />
-  <Main pageTitle="Posts" pageDesc="All the articles I've posted.">
-    <ul>
-      {page.data.map(data => <Card {...data} />)}
-    </ul>
+  <Main pageTitle="Posts" pageDesc="All articles, architectural deep-dives, and technical notes.">
+    <!-- Category / Tag Filter Pills (Langfuse Style) -->
+    <div class="mb-6 flex flex-wrap gap-2 items-center">
+      <a
+        href="/posts"
+        class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-medium rounded border border-line-cta bg-surface-1 text-text-primary"
+      >
+        + All [{allPosts.length}]
+      </a>
+      {
+        tags.map(({ tag, tagName }) => {
+          const count = allPosts.filter(p => p.data.tags.includes(tagName)).length;
+          return (
+            <a
+              href={`/tags/${tag}`}
+              class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono rounded border border-line-structure bg-surface-bg text-text-tertiary hover:border-line-cta hover:text-text-primary hover:bg-surface-1 transition-colors"
+            >
+              + {tagName} [{count}]
+            </a>
+          );
+        })
+      }
+    </div>
+
+    <!-- Posts Container -->
+    <div class="rounded-md border border-line-structure bg-surface-bg overflow-hidden shadow-xs">
+      <ul class="divide-y divide-line-structure">
+        {page.data.map(data => <Card {...data} />)}
+      </ul>
+    </div>
   </Main>
 
   <Pagination {page} />

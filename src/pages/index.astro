@@ -3,101 +3,102 @@ import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
-import Socials from "@/components/Socials.astro";
-import LinkButton from "@/components/LinkButton.astro";
 import Card from "@/components/Card.astro";
-import Hr from "@/components/Hr.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 import IconRss from "@/assets/icons/IconRss.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import { SITE } from "@/config";
 import { SOCIALS } from "@/constants";
 
-const posts = await getCollection("blog");
-
+const posts = await getCollection("blog", ({ data }) => !data.draft);
 const sortedPosts = getSortedPosts(posts);
-const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
 <Layout>
   <Header />
-  <main id="main-content" data-layout="index">
-    <section id="hero" class="pt-8 pb-6">
-      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        Anant
-      </h1>
-      <a
-        target="_blank"
-        href="/rss.xml"
-        class="inline-block"
-        aria-label="rss feed"
-        title="RSS Feed"
-      >
-        <IconRss
-          width={20}
-          height={20}
-          class="scale-125 stroke-accent stroke-3 rtl:-rotate-90"
-        />
-        <span class="sr-only">RSS Feed</span>
-      </a>
+  <main id="main-content" data-layout="index" class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1">
+    <!-- Hero / Intro -->
+    <div id="hero" class="mb-10 flex flex-col gap-4 border-b border-line-structure pb-8 w-full">
+      <div class="flex items-center gap-3">
+        <h1 class="text-3xl sm:text-5xl font-semibold tracking-tight text-text-primary">
+          Anant Agarwal
+        </h1>
+        <a
+          target="_blank"
+          href="/rss.xml"
+          class="p-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
+          aria-label="RSS Feed"
+          title="RSS Feed"
+        >
+          <IconRss class="size-4" />
+          <span class="sr-only">RSS Feed</span>
+        </a>
+      </div>
 
-      <p>
-        I focus on building software with craftsmanship at its core; clean,
-        maintainable, and thoughtfully designed. My work emphasizes scalable
-        systems, resilient architectures, and user-centric digital experiences.
-        I believe great software is not just about solving problems, but doing
-        so with clarity, elegance, and purpose.
+      <p class="text-base sm:text-lg text-text-secondary leading-relaxed font-normal w-full">
+        I focus on building software with craftsmanship at its core: clean,
+        maintainable, and thoughtfully designed. My work emphasizes scalable distributed
+        systems, core systems, resilient architectures, and agentic AI workflows.
       </p>
 
       {
-        // only display if at least one social link is enabled
         SOCIALS.length > 0 && (
-          <div class="mt-4 flex flex-col sm:flex-row sm:items-center">
-            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">Social Links:</div>
-            <Socials />
+          <div class="mt-2 flex flex-wrap items-center gap-2">
+            {SOCIALS.map(social => (
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
+                title={social.linkTitle}
+              >
+                <social.icon class="size-3.5 fill-transparent stroke-current stroke-2" />
+                <span>{social.name}</span>
+              </a>
+            ))}
+            <a
+              href="/about"
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
+            >
+              <span>About Me &rarr;</span>
+            </a>
           </div>
         )
       }
-    </section>
+    </div>
 
-    <Hr />
-
+    <!-- Latest Posts Section -->
     {
-      featuredPosts.length > 0 && (
-        <>
-          <section id="featured" class="pt-12 pb-6">
-            <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
-            <ul>
-              {featuredPosts.map(data => (
-                <Card variant="h3" {...data} />
+      sortedPosts.length > 0 && (
+        <div id="latest-posts" class="mb-10 w-full">
+          <div class="mb-4 flex items-baseline justify-between">
+            <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
+              Latest Posts
+            </h2>
+            <span class="font-mono text-xs text-text-tertiary">[{sortedPosts.length}]</span>
+          </div>
+
+          <!-- Posts Container (matching Posts page) -->
+          <div class="rounded-md border border-line-structure bg-surface-bg overflow-hidden shadow-xs w-full">
+            <ul class="divide-y divide-line-structure">
+              {sortedPosts.slice(0, SITE.postPerIndex ?? 4).map(data => (
+                <Card {...data} />
               ))}
             </ul>
-          </section>
-          {recentPosts.length > 0 && <Hr />}
-        </>
+          </div>
+        </div>
       )
     }
 
-    {
-      recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
-          <ul>
-            {recentPosts.map(
-              (data, index) =>
-                index < SITE.postPerIndex && <Card variant="h3" {...data} />
-            )}
-          </ul>
-        </section>
-      )
-    }
-
-    <div class="my-8 text-center">
-      <LinkButton href="/posts/">
-        All Posts
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
-      </LinkButton>
+    <!-- All Posts Link -->
+    <div class="my-8">
+      <a
+        href="/posts"
+        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-mono font-medium rounded border border-line-structure bg-surface-1 hover:bg-surface-2 hover:border-line-cta text-text-primary transition-all"
+      >
+        <span>View All Posts [{sortedPosts.length}]</span>
+        <IconArrowRight class="size-3.5 rtl:-rotate-180" />
+      </a>
     </div>
   </main>
   <Footer />

@@ -1,24 +1,28 @@
 ---
 import { SHARE_LINKS } from "@/constants";
-import LinkButton from "./LinkButton.astro";
 
 const URL = Astro.url;
 ---
 
 {
   SHARE_LINKS.length > 0 && (
-    <div class="flex flex-none flex-col items-center justify-center gap-1 md:items-start">
-      <span class="italic">Share this post on:</span>
-      <div class="text-center">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-md border border-line-structure bg-surface-1/40">
+      <div class="flex items-center gap-2 text-xs font-mono text-text-tertiary">
+        <span>✦</span>
+        <span>Share article:</span>
+      </div>
+      <div class="flex items-center gap-1.5 flex-wrap">
         {SHARE_LINKS.map(social => (
-          <LinkButton
+          <a
             href={`${social.href + URL}`}
-            class="scale-90 p-2 hover:rotate-6 sm:p-1"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-2 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
             title={social.linkTitle}
+            aria-label={social.linkTitle}
           >
-            <social.icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
-            <span class="sr-only">{social.linkTitle}</span>
-          </LinkButton>
+            <social.icon class="size-4 fill-transparent stroke-current stroke-2" />
+          </a>
         ))}
       </div>
     </div>

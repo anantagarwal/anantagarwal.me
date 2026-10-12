@@ -3,7 +3,6 @@ import type { Page } from "astro";
 import type { CollectionEntry } from "astro:content";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
-import LinkButton from "./LinkButton.astro";
 
 export interface Props {
   page: Page<CollectionEntry<"blog">>;
@@ -14,26 +13,42 @@ const { page } = Astro.props;
 
 {
   page.lastPage > 1 && (
-    <nav class="mt-auto mb-8 flex justify-center" aria-label="Pagination">
-      <LinkButton
-        disabled={!page.url.prev}
-        href={page.url.prev as string}
-        class:list={["me-4 select-none", { "opacity-50": !page.url.prev }]}
-        ariaLabel="Previous"
-      >
-        <IconArrowLeft class="inline-block rtl:rotate-180" />
-        Prev
-      </LinkButton>
-      {page.currentPage} / {page.lastPage}
-      <LinkButton
-        disabled={!page.url.next}
-        href={page.url.next as string}
-        class:list={["ms-4 select-none", { "opacity-50": !page.url.next }]}
-        ariaLabel="Next"
-      >
-        Next
-        <IconArrowRight class="inline-block rtl:rotate-180" />
-      </LinkButton>
+    <nav class="my-8 flex items-center justify-center gap-3 font-mono text-xs text-text-tertiary" aria-label="Pagination">
+      {page.url.prev ? (
+        <a
+          href={page.url.prev}
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-primary transition-colors"
+          aria-label="Previous Page"
+        >
+          <IconArrowLeft class="size-3 rtl:rotate-180" />
+          <span>Prev</span>
+        </a>
+      ) : (
+        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1/50 text-text-disabled cursor-not-allowed">
+          <IconArrowLeft class="size-3 rtl:rotate-180" />
+          <span>Prev</span>
+        </span>
+      )}
+
+      <span class="px-2 py-1 text-text-secondary">
+        {page.currentPage} / {page.lastPage}
+      </span>
+
+      {page.url.next ? (
+        <a
+          href={page.url.next}
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-primary transition-colors"
+          aria-label="Next Page"
+        >
+          <span>Next</span>
+          <IconArrowRight class="size-3 rtl:rotate-180" />
+        </a>
+      ) : (
+        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1/50 text-text-disabled cursor-not-allowed">
+          <span>Next</span>
+          <IconArrowRight class="size-3 rtl:rotate-180" />
+        </span>
+      )}
     </nav>
   )
 }

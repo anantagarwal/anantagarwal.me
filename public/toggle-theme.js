@@ -1,4 +1,4 @@
-const primaryColorScheme = ""; // "light" | "dark"
+const primaryColorScheme = "light"; // "light" | "dark"
 
 // Get theme data from local storage
 const currentTheme = localStorage.getItem("theme");
@@ -67,16 +67,23 @@ window.onload = () => {
   document.addEventListener("astro:after-swap", setThemeFeature);
 };
 
-// Set theme-color value before page transition
-// to avoid navigation bar color flickering in Android dark mode
+// Set theme-color and data-theme values before page transition
+// to avoid navigation bar color flickering and theme flash during view transitions
 document.addEventListener("astro:before-swap", event => {
+  const currentTheme = document.documentElement.getAttribute("data-theme");
+  if (currentTheme) {
+    event.newDocument.documentElement.setAttribute("data-theme", currentTheme);
+  }
+
   const bgColor = document
     .querySelector("meta[name='theme-color']")
     ?.getAttribute("content");
 
-  event.newDocument
-    .querySelector("meta[name='theme-color']")
-    ?.setAttribute("content", bgColor);
+  if (bgColor) {
+    event.newDocument
+      .querySelector("meta[name='theme-color']")
+      ?.setAttribute("content", bgColor);
+  }
 });
 
 // sync with system changes

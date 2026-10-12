@@ -4,16 +4,18 @@ import Timeline from "@/components/Timeline.astro";
 ---
 
 <AboutLayout frontmatter={{ title: "About" }}>
-  <div class="mt-8 font-sans">
+  <div class="font-sans">
     <!-- Introduction Section -->
-    <div class="space-y-4 text-base leading-relaxed text-foreground/85 sm:text-lg">
+    <div class="space-y-4 text-base leading-relaxed text-text-secondary sm:text-lg font-normal">
       <p>
         I am a software engineer and architect with{" "}
-        <strong>19+ years of experience</strong> designing, architecting, and
-        delivering enterprise-grade applications. My career centers on building
-        high-performance, secure, and resilient distributed systems - with deep
-        domain expertise in core banking, payment networks, and financial
-        platforms.
+        <strong class="text-text-primary font-semibold">
+          19+ years of experience
+        </strong>{" "}
+        designing, architecting, and delivering enterprise-grade applications.
+        My career centers on building high-performance, secure, and resilient
+        distributed systems - with deep domain expertise in core banking,
+        payment networks, and financial platforms.
       </p>
       <p>
         Passionate about software craftsmanship, I focus on clean architecture,
@@ -22,33 +24,33 @@ import Timeline from "@/components/Timeline.astro";
       </p>
     </div>
 
-    <!-- Core Philosophy / Focus highlights -->
+    <!-- Core Philosophy / Focus highlights (Langfuse Card Grid) -->
     <div class="mt-8 grid gap-4 sm:grid-cols-3 not-prose">
-      <div class="rounded-xl border border-border/50 bg-muted/15 p-4.5 transition-colors hover:border-accent/40">
-        <div class="text-accent mb-1.5 text-base font-bold sm:text-lg">
+      <div class="rounded-md border border-line-structure bg-surface-bg p-5 transition-colors hover:border-line-cta hover:bg-surface-1 shadow-xs">
+        <div class="text-text-primary mb-1.5 text-base font-semibold">
           Resilient Systems
         </div>
-        <p class="text-xs leading-relaxed text-foreground/75 sm:text-sm">
+        <p class="text-xs leading-relaxed text-text-tertiary sm:text-sm">
           Designing scalable, fault-tolerant architectures using Domain-Driven
           Design (DDD), CQRS, Hexagonal patterns, and event-driven pipelines.
         </p>
       </div>
 
-      <div class="rounded-xl border border-border/50 bg-muted/15 p-4.5 transition-colors hover:border-accent/40">
-        <div class="text-accent mb-1.5 text-base font-bold sm:text-lg">
+      <div class="rounded-md border border-line-structure bg-surface-bg p-5 transition-colors hover:border-line-cta hover:bg-surface-1 shadow-xs">
+        <div class="text-text-primary mb-1.5 text-base font-semibold">
           FinTech & Banking
         </div>
-        <p class="text-xs leading-relaxed text-foreground/75 sm:text-sm">
+        <p class="text-xs leading-relaxed text-text-tertiary sm:text-sm">
           End-to-end expertise in mission-critical banking engines, ISO 20022
           clearing integrations, products/lending, and Open Banking APIs.
         </p>
       </div>
 
-      <div class="rounded-xl border border-border/50 bg-muted/15 p-4.5 transition-colors hover:border-accent/40">
-        <div class="text-accent mb-1.5 text-base font-bold sm:text-lg">
-          Agentic AI & Modern Tech
+      <div class="rounded-md border border-line-structure bg-surface-bg p-5 transition-colors hover:border-line-cta hover:bg-surface-1 shadow-xs">
+        <div class="text-text-primary mb-1.5 text-base font-semibold">
+          Agentic AI & Architecture
         </div>
-        <p class="text-xs leading-relaxed text-foreground/75 sm:text-sm">
+        <p class="text-xs leading-relaxed text-text-tertiary sm:text-sm">
           Architecting multi-agent systems, Model Context Protocol (MCP)
           integrations, and AI-assisted workflows to accelerate engineering
           delivery.
@@ -57,13 +59,16 @@ import Timeline from "@/components/Timeline.astro";
     </div>
 
     <!-- Subtle divider -->
-    <div class="my-12 border-t border-border/50"></div>
+    <div class="my-10 border-t border-line-structure"></div>
 
     <!-- Experience section -->
     <section class="not-prose">
-      <h2 class="text-xl font-bold tracking-wider text-foreground sm:text-2xl mb-8">
-        Experience
-      </h2>
+      <div class="flex items-center gap-2 mb-6">
+        <span class="font-mono text-xs text-text-tertiary">+</span>
+        <h2 class="text-xl font-semibold tracking-tight text-text-primary">
+          Experience
+        </h2>
+      </div>
       <Timeline />
     </section>
   </div>
