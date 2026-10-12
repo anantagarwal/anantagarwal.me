@@ -4,26 +4,17 @@ interface Experience {
   company: string;
   dateRange: string;
   location?: string;
-  description?: string;
-  skills: string[];
+  description: string;
 }
 
 const experiences: Experience[] = [
   {
     role: "Principal Software Engineer",
-    company: "Audax (SC Ventures)",
+    company: "Audax (Standard Chartered Ventures)",
     dateRange: "May 2025 – Present",
-    location: "Bengaluru · Hybrid",
+    location: "Bengaluru",
     description:
-      "Leading greenfield delivery of core banking platform modules (Products, Payments & Cards, Accounts & Transactions). Spearheading system architecture, product engine capabilities, ISO 20022 clearing integrations, and event-driven orchestration.",
-    skills: [
-      "Core Banking",
-      "Payments & Cards",
-      "ISO 20022",
-      "Event-Driven Architecture",
-      "Domain-Driven Design",
-      "Spring Boot",
-    ],
+      "Led greenfield delivery of three core banking modules (Products, Payments & Cards, Accounts & Transactions) with a team of 15 engineers. Hands-on across architecture, service development, ISO 20022 integration, and CI/CD.",
   },
   {
     role: "Engineering Lead",
@@ -31,30 +22,15 @@ const experiences: Experience[] = [
     dateRange: "Oct 2020 – May 2025",
     location: "Bengaluru",
     description:
-      "Architected the Accounts & Transactions layer using CQRS with Cassandra, spearheaded Open Banking (BISNAP) for Indonesia, introduced OPA sidecar-based API authorization, and built loan operations portals in React.",
-    skills: [
-      "CQRS",
-      "Open Banking (BISNAP)",
-      "Cassandra",
-      "Open Policy Agent (OPA)",
-      "React.js",
-      "SumoLogic",
-    ],
+      "Architected the CQRS-based Accounts & Transactions layer and led Open Banking (BISNAP) for Indonesia. Also built OPA-based API authorization, the Nexus Tracer logging framework, and a loan ops portal.",
   },
   {
     role: "Lead Consultant",
-    company: "ThoughtWorks",
+    company: "ThoughtWorks Technologies India",
     dateRange: "Dec 2019 – Oct 2020",
     location: "Bengaluru",
     description:
-      "Advised enterprise clients on architectural modernization, championed security engineering following the STRIDE model, and orchestrated cloud data platform migrations on AWS.",
-    skills: [
-      "Architecture Modernization",
-      "STRIDE Security",
-      "AWS EMR",
-      "Extreme Programming (XP)",
-      "Clean Code",
-    ],
+      "Security Champion following the STRIDE model on an existing pricing product. Handled upgrades and migrated from a long-running AWS EMR cluster to ephemeral clusters.",
   },
   {
     role: "Technical Architect",
@@ -62,44 +38,28 @@ const experiences: Experience[] = [
     dateRange: "Jan 2019 – Dec 2019",
     location: "Bengaluru",
     description:
-      "Architected multi-tenant client PWAs and financial microservices for automated reporting, mutual fund processing integrations (NSE/BSE), and custom ETL job execution engines.",
-    skills: [
-      "Fintech Systems",
-      "PWA",
-      "Microservices",
-      "ETL Pipelines",
-      "NSE / BSE APIs",
-    ],
+      "Built a multi-tenant PWA and microservices for reporting, mandates and communication. Integrated with NSE and BSE for mutual fund transactions.",
   },
   {
-    role: "Technical Architect (Branch Banking)",
-    company: "TCS BaNCS",
+    role: "Technical Architect",
+    company: "TCS BaNCS Branch Banking",
     dateRange: "Jun 2014 – Dec 2018",
-    location: "Bengaluru",
     description:
-      "Architected scalable Branch Banking channel solutions for global tier-1 implementations (Israel, Australia, Sweden, Middle East, UK). Engineered metadata-driven frameworks, real-time alert systems, and service mocking tools.",
-    skills: [
-      "TCS BaNCS",
-      "Branch Banking",
-      "Multi-Client Architecture",
-      "Performance Tuning",
-      "Distributed Systems",
-    ],
+      "Architected the Branch Channel solution and a metadata-driven UI framework, led teams across implementations in Israel, Australia, Sweden, the Middle East and the UK. Mentored juniors along the way.",
   },
   {
-    role: "Technical Lead & Software Engineer",
-    company: "TCS BaNCS",
-    dateRange: "Jan 2007 – May 2014",
-    location: "Bengaluru",
+    role: "Technical Lead",
+    company: "TCS BaNCS Corporate Banking",
+    dateRange: "May 2011 – Apr 2014",
     description:
-      "Led technical delivery for corporate bulk payment processing engines with high-throughput metadata processing. Earlier engineered wealth management algorithms, cashflow modeling, and client extranets (TCS Innovation Award recipient).",
-    skills: [
-      "Bulk Payments",
-      "Wealth Management",
-      "Financial Algorithms",
-      "Java EE",
-      "Performance Tuning",
-    ],
+      "Led the team building a metadata-based bulk payments file processing engine, including its performance tuning and security.",
+  },
+  {
+    role: "Developer",
+    company: "TCS BaNCS Wealth Management",
+    dateRange: "Jan 2007 – Apr 2011",
+    description:
+      "Built reports and financial logic for cashflow, planning and portfolio rebalancing, and worked on site with the UK client to bridge their needs and the product.",
   },
 ];
 ---
@@ -107,10 +67,8 @@ const experiences: Experience[] = [
 <div class="relative my-6 border-s border-line-structure ml-2 sm:ml-3 pl-6 sm:pl-8 space-y-10">
   {experiences.map((exp) => (
     <div class="relative group">
-      <!-- Minimalist Node Dot on the timeline spine -->
       <div class="absolute -start-[29px] sm:-start-[37px] top-1.5 h-2 w-2 rounded-full bg-text-primary ring-4 ring-surface-bg transition-transform duration-200 group-hover:scale-125"></div>
 
-      <!-- Header: Role, Company & Date -->
       <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
         <h3 class="text-base sm:text-lg font-semibold text-text-primary">
           {exp.role}
@@ -122,28 +80,15 @@ const experiences: Experience[] = [
         </time>
       </div>
 
-      <!-- Optional subtle location -->
       {exp.location && (
         <div class="mt-0.5 text-xs font-mono text-text-tertiary">
           {exp.location}
         </div>
       )}
 
-      <!-- Description -->
-      {exp.description && (
-        <p class="mt-2.5 text-sm leading-relaxed text-text-secondary">
-          {exp.description}
-        </p>
-      )}
-
-      <!-- Clean Langfuse skill badges -->
-      <div class="mt-3 flex flex-wrap gap-1.5">
-        {exp.skills.map((skill) => (
-          <span class="rounded border border-line-structure bg-surface-1 px-2 py-0.5 text-[11px] font-mono text-text-secondary">
-            {skill}
-          </span>
-        ))}
-      </div>
+      <p class="mt-2.5 text-sm leading-relaxed text-text-secondary">
+        {exp.description}
+      </p>
     </div>
   ))}
 </div>
