@@ -333,95 +333,6 @@ const nextPost =
     }
   }
 
-  /** Initialize Mermaid and render diagrams dynamically.
-   * Reads CSS custom properties so diagrams adapt to light/dark themes.
-   * Supports theme switching (MutationObserver). */
-  async function initMermaid() {
-    const elements = document.querySelectorAll("pre.mermaid");
-    if (elements.length === 0) return;
-
-    // Wait for web fonts (Inter) to be ready so Mermaid calculates precise text dimensions
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-
-    // Dynamically load Mermaid library
-    const { default: mermaid } = await import(
-      "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
-    );
-
-    /** Build a mermaid config object using official defaults */
-    function getMermaidConfig() {
-      const isDark =
-        document.documentElement.getAttribute("data-theme") === "dark";
-
-      return {
-        startOnLoad: false,
-        theme: isDark ? "dark" : "default",
-        securityLevel: "loose",
-        fontFamily: "Inter, system-ui, -apple-system, sans-serif",
-        themeVariables: {
-          fontFamily: "Inter, system-ui, -apple-system, sans-serif",
-        },
-      };
-    }
-
-    mermaid.initialize(getMermaidConfig());
-
-    for (const element of elements) {
-      const code = element.textContent;
-      const id = "mermaid-" + Math.random().toString(36).substring(2, 9);
-      try {
-        const { svg } = await mermaid.render(id, code);
-        const container = document.createElement("div");
-        container.className =
-          "mermaid-container not-prose my-8 flex justify-center w-full overflow-x-auto";
-        container.setAttribute("data-original-code", code);
-        container.innerHTML = svg;
-        element.replaceWith(container);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Mermaid rendering error:", error);
-      }
-    }
-
-    if (window.mermaidObserver) {
-      window.mermaidObserver.disconnect();
-    }
-
-    window.mermaidObserver = new MutationObserver(async mutations => {
-      for (const mutation of mutations) {
-        if (
-          mutation.type === "attributes" &&
-          mutation.attributeName === "data-theme"
-        ) {
-          mermaid.initialize(getMermaidConfig());
-
-          const activeContainers =
-            document.querySelectorAll(".mermaid-container");
-          for (const container of activeContainers) {
-            const code = container.getAttribute("data-original-code");
-            if (!code) continue;
-            const id =
-              "mermaid-theme-" + Math.random().toString(36).substring(2, 9);
-            try {
-              const { svg } = await mermaid.render(id, code);
-              container.innerHTML = svg;
-            } catch (error) {
-              // eslint-disable-next-line no-console
-              console.error("Mermaid re-rendering error:", error);
-            }
-          }
-        }
-      }
-    });
-
-    window.mermaidObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-  }
-
   function updateGoBackUrl() {
     const backButton = document.querySelector("#back-button");
     const backUrl = sessionStorage.getItem("backUrl");
@@ -432,7 +343,6 @@ const nextPost =
 
   async function setupPage() {
     addHeadingLinks();
-    await initMermaid();
     attachCopyButtons();
     updateGoBackUrl();
   }

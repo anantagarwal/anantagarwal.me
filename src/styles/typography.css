@@ -146,17 +146,208 @@
     }
   }
 
-  /* ===== Mermaid Diagrams Styling ===== */
-  .mermaid-container {
-    @apply my-8 flex justify-center w-full overflow-x-auto;
+  /* ===== Mermaid Diagrams Styling =====
+   * Rendered by astro-mermaid (theme: default/dark via data-theme).
+   * All colours are driven from the site's CSS tokens with !important so
+   * they win over mermaid's per-diagram inline <style>, and they update
+   * instantly on theme toggle. Do not set fill/stroke in diagram source. */
+  pre.mermaid {
+    --mm-control: #4f46e5;
+    --mm-data: #c2610c;
+    --mm-ok: #15803d;
+    --mm-bad: #be123c;
+    margin: 2rem 0;
+    padding: 1.5rem 1rem;
+    border: 1px solid var(--line-structure);
+    border-radius: 0.5rem;
+    background: var(--surface-1) !important;
+    overflow-x: auto;
+    /* reset inherited code-block typography so it matches mermaid's measurement */
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: center;
+    display: flex;
+    justify-content: center;
   }
-
-  .mermaid-container svg {
+  html[data-theme="dark"] pre.mermaid {
+    --mm-control: #8ea0ff;
+    --mm-data: #f0a050;
+    --mm-ok: #4ade80;
+    --mm-bad: #fb7185;
+  }
+  pre.mermaid svg {
     max-width: 100%;
     height: auto;
+    /* font metrics must match what mermaid measured: do not change
+       font-family/size/weight/transform on labels below */
+  }
+  pre.mermaid foreignObject {
+    overflow: visible;
+  }
+  /* prose margins/spacing on <p>/<span> inside HTML labels skew mermaid's layout */
+  pre.mermaid p,
+  pre.mermaid span,
+  pre.mermaid div {
+    margin: 0 !important;
+    padding-top: 0;
+    padding-bottom: 0;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+  /* .app-prose p sets 16-17px / 1.75 which diverges from mermaid's 16px / 1.5 measurement */
+  pre.mermaid p {
+    font-size: inherit !important;
+    line-height: 1.5 !important;
   }
 
-  .mermaid-container foreignObject {
-    overflow: visible;
+  /* --- Nodes --- */
+  pre.mermaid .node rect,
+  pre.mermaid .node polygon,
+  pre.mermaid .node circle,
+  pre.mermaid .node ellipse,
+  pre.mermaid .node path {
+    fill: var(--surface-bg) !important;
+    stroke: var(--line-cta) !important;
+    stroke-width: 1.25px;
+    rx: 8px;
+    ry: 8px;
+  }
+  pre.mermaid .node.control rect,
+  pre.mermaid .node.control polygon,
+  pre.mermaid .node.control circle,
+  pre.mermaid .node.control path {
+    fill: color-mix(in srgb, var(--mm-control) 12%, var(--surface-bg)) !important;
+    stroke: var(--mm-control) !important;
+  }
+  pre.mermaid .node.data rect,
+  pre.mermaid .node.data polygon,
+  pre.mermaid .node.data circle,
+  pre.mermaid .node.data path {
+    fill: color-mix(in srgb, var(--mm-data) 12%, var(--surface-bg)) !important;
+    stroke: var(--mm-data) !important;
+  }
+  pre.mermaid .node.ok rect,
+  pre.mermaid .node.ok polygon,
+  pre.mermaid .node.ok path {
+    fill: color-mix(in srgb, var(--mm-ok) 12%, var(--surface-bg)) !important;
+    stroke: var(--mm-ok) !important;
+  }
+  pre.mermaid .node.bad rect,
+  pre.mermaid .node.bad polygon,
+  pre.mermaid .node.bad path {
+    fill: color-mix(in srgb, var(--mm-bad) 12%, var(--surface-bg)) !important;
+    stroke: var(--mm-bad) !important;
+  }
+
+  /* --- Text --- */
+  pre.mermaid .nodeLabel,
+  pre.mermaid .label,
+  pre.mermaid .label text,
+  pre.mermaid .node text,
+  pre.mermaid span.nodeLabel p,
+  pre.mermaid .cluster-label span,
+  pre.mermaid .cluster-label p {
+    color: var(--text-primary) !important;
+    fill: var(--text-primary) !important;
+  }
+  pre.mermaid .cluster-label span,
+  pre.mermaid .cluster-label p,
+  pre.mermaid .cluster-label text {
+    color: var(--text-tertiary) !important;
+    fill: var(--text-tertiary) !important;
+  }
+
+  /* --- Subgraphs --- */
+  pre.mermaid .cluster rect {
+    fill: color-mix(in srgb, var(--surface-2) 55%, transparent) !important;
+    stroke: var(--line-structure) !important;
+    stroke-dasharray: 4 4;
+    stroke-width: 1px;
+    rx: 10px;
+    ry: 10px;
+  }
+
+  /* --- Edges --- */
+  pre.mermaid .edgePath .path,
+  pre.mermaid .flowchart-link,
+  pre.mermaid .transition {
+    stroke: var(--text-tertiary) !important;
+    stroke-width: 1.5px !important;
+  }
+  pre.mermaid .marker,
+  pre.mermaid marker path {
+    fill: var(--text-tertiary) !important;
+    stroke: var(--text-tertiary) !important;
+  }
+  pre.mermaid .edgeLabel,
+  pre.mermaid .edgeLabel p,
+  pre.mermaid .edgeLabel span,
+  pre.mermaid .edgeLabel rect {
+    background-color: var(--surface-1) !important;
+    fill: var(--surface-1) !important;
+    color: var(--text-secondary) !important;
+    opacity: 1;
+  }
+
+  /* --- Sequence diagrams --- */
+  pre.mermaid rect.actor,
+  pre.mermaid .actor {
+    fill: var(--surface-bg) !important;
+    stroke: var(--line-cta) !important;
+    stroke-width: 1.25px;
+    rx: 8px;
+  }
+  pre.mermaid text.actor,
+  pre.mermaid text.actor > tspan {
+    fill: var(--text-primary) !important;
+  }
+  pre.mermaid .actor-line {
+    stroke: var(--line-divider-dash) !important;
+    stroke-dasharray: 3 4;
+  }
+  pre.mermaid .messageLine0,
+  pre.mermaid .messageLine1 {
+    stroke: var(--text-secondary) !important;
+    stroke-width: 1.5px;
+  }
+  pre.mermaid #arrowhead path,
+  pre.mermaid #crosshead path,
+  pre.mermaid #sequencenumber {
+    fill: var(--text-secondary) !important;
+    stroke: var(--text-secondary) !important;
+  }
+  pre.mermaid .messageText,
+  pre.mermaid .loopText,
+  pre.mermaid .loopText > tspan,
+  pre.mermaid .labelText,
+  pre.mermaid .labelText > tspan {
+    fill: var(--text-primary) !important;
+    stroke: none !important;
+  }
+  pre.mermaid .sequenceNumber {
+    fill: var(--surface-bg) !important;
+  }
+  pre.mermaid .labelBox {
+    fill: var(--surface-2) !important;
+    stroke: var(--line-structure) !important;
+  }
+  pre.mermaid .loopLine {
+    stroke: var(--line-cta) !important;
+    stroke-dasharray: 4 3;
+  }
+  pre.mermaid .note {
+    fill: color-mix(in srgb, var(--mm-data) 10%, var(--surface-bg)) !important;
+    stroke: var(--mm-data) !important;
+  }
+  pre.mermaid .noteText,
+  pre.mermaid .noteText > tspan {
+    fill: var(--text-primary) !important;
+  }
+  pre.mermaid .activation0,
+  pre.mermaid .activation1,
+  pre.mermaid .activation2 {
+    fill: color-mix(in srgb, var(--mm-control) 18%, var(--surface-bg)) !important;
+    stroke: var(--mm-control) !important;
   }
 }

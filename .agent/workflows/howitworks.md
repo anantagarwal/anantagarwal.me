@@ -69,36 +69,53 @@ DOCUMENT STRUCTURE (STRICT):
    - Patterns the reader should recognize elsewhere
 
 MERMAID REQUIREMENTS:
-- Use Mermaid syntax only
-- **DO NOT include `%%{init: ...}%%` directives in diagrams.** Theming is handled at
-  runtime by `mermaid.initialize()` reading CSS custom properties (`--mermaid-*`,
-  `--foreground`, `--background`). Inline init blocks would bake in hardcoded
-  light-mode colors that cannot be overridden in dark mode.
-- Use blue for control / orchestration (control classDef)
-- Use orange for data / storage components (data classDef)
-- **DO NOT include `fill:` or `stroke:` in classDef declarations.** Mermaid bakes
-  classDef fill/stroke values into its internal SVG `<style>` block, which overrides
-  external CSS and breaks dark mode. Only `stroke-width` is allowed. Colors come from
-  `themeVariables` (set in `PostDetails.astro` from CSS custom properties) and CSS
-  selectors targeting `.node.control` and `.node.data` in `global.css`.
-  Example:
-  classDef control stroke-width:2px;
-  classDef data stroke-width:2px;
-  class NodeA,NodeB control;
-  class NodeC data;
+- Write diagrams as normal ```mermaid fenced blocks. Rendering is done by the official
+  `astro-mermaid` integration (configured in `astro.config.ts`, mermaid v11). Do not add
+  custom scripts or remark plugins.
+- Syntax rules (so diagrams stay clean and theme-safe):
+  - **No `%%{init: ...}%%` directives**, no `style` lines, no `linkStyle`.
+  - **No `fill:`, `stroke:` or `color:` in `classDef`.** Colours come from CSS tokens in
+    `src/styles/typography.css` (`pre.mermaid ...`) so light/dark both work. A classDef
+    may only set `stroke-width`.
+  - Semantic classes (the only colour channel): `control` (indigo, orchestration),
+    `data` (orange, storage/state), `ok` (green), `bad` (red). Default nodes are neutral.
+    Example:
+      classDef control stroke-width:2px;
+      classDef data stroke-width:2px;
+      class NodeA,NodeB control;
+      class NodeC data;
+  - Use at most 2 semantic colours per diagram. Neutral is the default, not a failure.
+  - Prefer `flowchart LR` for pipelines and `flowchart TB` for layered architectures.
+    Use `sequenceDiagram` with `autonumber` for request lifecycles.
+  - Keep node labels short (<= ~28 chars per line). Use `<br/>` for a second line.
+    Max ~10 nodes per diagram; split otherwise. Quote labels containing parentheses.
+  - Group with `subgraph id["Title"]` (plain sentence case title, no emoji, no HTML tags
+    except `<br/>`). Label edges only when the label adds information.
+  - Use `-->` for control flow, `-.->` for async/optional, `==>` sparingly for the hot path.
 
-DARK MODE NOTES:
-- The site uses `data-theme="dark"` on `<html>`. CSS custom properties in `global.css`
-  define separate palettes for `:root` (light) and `html[data-theme="dark"]` (dark).
-- `PostDetails.astro` initializes mermaid with `theme: "base"` and passes computed
-  CSS variable values as `themeVariables`, so the SVG is rendered with the correct
-  palette from the start.
-- Additional CSS selectors in `global.css` under `.mermaid-container` override edge
-  labels, subgraph backgrounds, sequence diagram actors/lifelines/activation boxes,
-  arrowheads, and autonumber badges. This provides a safety net if mermaid's own
-  theming misses an element.
-- A `MutationObserver` watches `data-theme` changes and re-renders all diagrams with
-  updated colors when the user toggles themes.
+HOW THEMING WORKS (do not fight it):
+- `astro-mermaid` runs with `autoTheme: true`: it maps `<html data-theme="light|dark">`
+  to mermaid's `default`/`dark` themes and re-renders on toggle. It also handles Astro
+  view transitions and MDX.
+- Fonts: diagrams use a system font stack (`MERMAID_FONT` in `astro.config.ts`), NOT the
+  Inter webfont. Mermaid measures text synchronously on load, before the webfont arrives,
+  which makes labels overflow their boxes.
+- Metrics: `pre.mermaid` in `typography.css` resets the inherited code-block and
+  `.app-prose p` typography (font-size 16px, line-height 1.5, zero margins). Mermaid's
+  `themeVariables.fontSize` in `astro.config.ts` must stay equal to that CSS value. Never
+  change font-size/weight/letter-spacing/text-transform on labels, or text will clip.
+- Colours: `typography.css` styles nodes, clusters, edges, edge labels and sequence
+  elements from the site tokens (`--surface-*`, `--line-*`, `--text-*`) with `!important`,
+  so they beat mermaid's per-diagram inline `<style>`. Accent colours are `--mm-control`,
+  `--mm-data`, `--mm-ok`, `--mm-bad`, defined per theme on `pre.mermaid`.
+- Layout tuning (curve, padding, node/rank spacing, subgraph title margin) lives in
+  `mermaidConfig` in `astro.config.ts`.
+
+VERIFY EVERY NEW DIAGRAM:
+- `npx astro build && npx astro preview`, open the post, check light AND dark.
+- Look for text clipped outside nodes, subgraph titles colliding with nodes, and
+  unreadable edge labels. If text overflows, the cause is almost always a font-metric
+  mismatch (see above), not the diagram source.
 
 CONSTRAINTS:
 - No marketing language

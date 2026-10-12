@@ -16,36 +16,46 @@ import mdx from "@astrojs/mdx";
 
 import react from "@astrojs/react";
 
-function remarkMermaid() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (tree: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const walk = (node: any) => {
-      if (node.type === "code" && node.lang === "mermaid") {
-        node.type = "html";
-        node.value = `<pre class="mermaid">${escapeHtml(node.value)}</pre>`;
-      }
-      if (node.children) {
-        node.children.forEach(walk);
-      }
-    };
-    walk(tree);
-  };
-}
+import mermaid from "astro-mermaid";
 
-function escapeHtml(str: string) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+// System font stack on purpose: mermaid measures text synchronously on load,
+// before the Inter webfont arrives. A webfont here causes labels to overflow nodes.
+const MERMAID_FONT =
+  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
   integrations: [
+    // Must come before mdx()
+    mermaid({
+      theme: "default",
+      autoTheme: true, // follows <html data-theme="light|dark">
+      mermaidConfig: {
+        fontFamily: MERMAID_FONT,
+        themeVariables: {
+          fontFamily: MERMAID_FONT,
+          fontSize: "16px",
+        },
+        flowchart: {
+          curve: "basis",
+          htmlLabels: true,
+          padding: 18,
+          subGraphTitleMargin: { top: 6, bottom: 16 },
+          nodeSpacing: 40,
+          rankSpacing: 48,
+          useMaxWidth: true,
+        },
+        sequence: {
+          useMaxWidth: true,
+          actorMargin: 60,
+          messageMargin: 36,
+          mirrorActors: false,
+          boxMargin: 8,
+        },
+        state: { useMaxWidth: true },
+      },
+    }),
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
@@ -57,7 +67,6 @@ export default defineConfig({
       remarkPlugins: [
         remarkToc,
         [remarkCollapse, { test: "Table of contents" }],
-        remarkMermaid,
       ],
     }),
     shikiConfig: {
