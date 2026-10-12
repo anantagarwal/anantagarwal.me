@@ -70,24 +70,37 @@ DOCUMENT STRUCTURE (STRICT):
 
 MERMAID REQUIREMENTS:
 - Use Mermaid syntax only
-- Apply this theme consistently to ALL diagrams:
+- **DO NOT include `%%{init: ...}%%` directives in diagrams.** Theming is handled at
+  runtime by `mermaid.initialize()` reading CSS custom properties (`--mermaid-*`,
+  `--foreground`, `--background`). Inline init blocks would bake in hardcoded
+  light-mode colors that cannot be overridden in dark mode.
+- Use blue for control / orchestration (control classDef)
+- Use orange for data / storage components (data classDef)
+- **DO NOT include `fill:` or `stroke:` in classDef declarations.** Mermaid bakes
+  classDef fill/stroke values into its internal SVG `<style>` block, which overrides
+  external CSS and breaks dark mode. Only `stroke-width` is allowed. Colors come from
+  `themeVariables` (set in `PostDetails.astro` from CSS custom properties) and CSS
+  selectors targeting `.node.control` and `.node.data` in `global.css`.
+  Example:
+  classDef control stroke-width:2px;
+  classDef data stroke-width:2px;
+  class NodeA,NodeB control;
+  class NodeC data;
 
-%%{init: {
-  "theme": "base",
-  "themeVariables": {
-    "primaryColor": "#E3F2FD",
-    "primaryBorderColor": "#1E88E5",
-    "secondaryColor": "#FFF3E0",
-    "secondaryBorderColor": "#FB8C00",
-    "lineColor": "#546E7A",
-    "fontSize": "14px"
-  }
-}}%%
-
-- Use blue for control / orchestration
-- Use orange for data / storage components
+DARK MODE NOTES:
+- The site uses `data-theme="dark"` on `<html>`. CSS custom properties in `global.css`
+  define separate palettes for `:root` (light) and `html[data-theme="dark"]` (dark).
+- `PostDetails.astro` initializes mermaid with `theme: "base"` and passes computed
+  CSS variable values as `themeVariables`, so the SVG is rendered with the correct
+  palette from the start.
+- Additional CSS selectors in `global.css` under `.mermaid-container` override edge
+  labels, subgraph backgrounds, sequence diagram actors/lifelines/activation boxes,
+  arrowheads, and autonumber badges. This provides a safety net if mermaid's own
+  theming misses an element.
+- A `MutationObserver` watches `data-theme` changes and re-renders all diagrams with
+  updated colors when the user toggles themes.
 
 CONSTRAINTS:
 - No marketing language
-- No “getting started” or installation
+- No "getting started" or installation
 - Depth > breadth

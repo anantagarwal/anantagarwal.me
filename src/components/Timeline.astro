@@ -1,0 +1,149 @@
+---
+interface Experience {
+  role: string;
+  company: string;
+  dateRange: string;
+  location?: string;
+  description?: string;
+  skills: string[];
+}
+
+const experiences: Experience[] = [
+  {
+    role: "Principal Software Engineer",
+    company: "Audax (SC Ventures)",
+    dateRange: "May 2025 – Present",
+    location: "Bengaluru · Hybrid",
+    description:
+      "Leading greenfield delivery of core banking platform modules (Products, Payments & Cards, Accounts & Transactions). Spearheading system architecture, product engine capabilities, ISO 20022 clearing integrations, and event-driven orchestration.",
+    skills: [
+      "Core Banking",
+      "Payments & Cards",
+      "ISO 20022",
+      "Event-Driven Architecture",
+      "Domain-Driven Design",
+      "Spring Boot",
+    ],
+  },
+  {
+    role: "Engineering Lead",
+    company: "Standard Chartered Bank",
+    dateRange: "Oct 2020 – May 2025",
+    location: "Bengaluru",
+    description:
+      "Architected the Accounts & Transactions layer using CQRS with Cassandra, spearheaded Open Banking (BISNAP) for Indonesia, introduced OPA sidecar-based API authorization, and built loan operations portals in React.",
+    skills: [
+      "CQRS",
+      "Open Banking (BISNAP)",
+      "Cassandra",
+      "Open Policy Agent (OPA)",
+      "React.js",
+      "SumoLogic",
+    ],
+  },
+  {
+    role: "Lead Consultant",
+    company: "ThoughtWorks",
+    dateRange: "Dec 2019 – Oct 2020",
+    location: "Bengaluru",
+    description:
+      "Advised enterprise clients on architectural modernization, championed security engineering following the STRIDE model, and orchestrated cloud data platform migrations on AWS.",
+    skills: [
+      "Architecture Modernization",
+      "STRIDE Security",
+      "AWS EMR",
+      "Extreme Programming (XP)",
+      "Clean Code",
+    ],
+  },
+  {
+    role: "Technical Architect",
+    company: "Rupeelog Financial Services",
+    dateRange: "Jan 2019 – Dec 2019",
+    location: "Bengaluru",
+    description:
+      "Architected multi-tenant client PWAs and financial microservices for automated reporting, mutual fund processing integrations (NSE/BSE), and custom ETL job execution engines.",
+    skills: [
+      "Fintech Systems",
+      "PWA",
+      "Microservices",
+      "ETL Pipelines",
+      "NSE / BSE APIs",
+    ],
+  },
+  {
+    role: "Technical Architect (Branch Banking)",
+    company: "TCS BaNCS",
+    dateRange: "Jun 2014 – Dec 2018",
+    location: "Bengaluru",
+    description:
+      "Architected scalable Branch Banking channel solutions for global tier-1 implementations (Israel, Australia, Sweden, Middle East, UK). Engineered metadata-driven frameworks, real-time alert systems, and service mocking tools.",
+    skills: [
+      "TCS BaNCS",
+      "Branch Banking",
+      "Multi-Client Architecture",
+      "Performance Tuning",
+      "Distributed Systems",
+    ],
+  },
+  {
+    role: "Technical Lead & Software Engineer",
+    company: "TCS BaNCS",
+    dateRange: "Jan 2007 – May 2014",
+    location: "Bengaluru",
+    description:
+      "Led technical delivery for corporate bulk payment processing engines with high-throughput metadata processing. Earlier engineered wealth management algorithms, cashflow modeling, and client extranets (TCS Innovation Award recipient).",
+    skills: [
+      "Bulk Payments",
+      "Wealth Management",
+      "Financial Algorithms",
+      "Java EE",
+      "Performance Tuning",
+    ],
+  },
+];
+---
+
+<div class="relative my-6 border-s border-border/70 ml-2 sm:ml-3 pl-6 sm:pl-8 space-y-10">
+  {experiences.map((exp) => (
+    <div class="relative group">
+      <!-- Minimalist Node Dot on the timeline spine -->
+      <div class="absolute -start-[29px] sm:-start-[37px] top-1.5 h-2.5 w-2.5 rounded-full bg-accent ring-4 ring-background transition-transform duration-200 group-hover:scale-125"></div>
+
+      <!-- Header: Role, Company & Date -->
+      <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+        <h3 class="text-base sm:text-lg font-semibold text-foreground">
+          {exp.role}
+          <span class="font-normal text-foreground/50"> · </span>
+          <span class="text-accent font-medium">{exp.company}</span>
+        </h3>
+        <time class="text-xs font-mono text-foreground/50 sm:text-right shrink-0">
+          {exp.dateRange}
+        </time>
+      </div>
+
+      <!-- Optional subtle location -->
+      {exp.location && (
+        <div class="mt-0.5 text-xs text-foreground/50">
+          {exp.location}
+        </div>
+      )}
+
+      <!-- Description -->
+      {exp.description && (
+        <p class="mt-2.5 text-sm leading-relaxed text-foreground/80">
+          {exp.description}
+        </p>
+      )}
+
+      <!-- Clean, subtle skill tags -->
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        {exp.skills.map((skill) => (
+          <span class="rounded bg-muted/40 px-2 py-0.5 text-xs text-foreground/65 border border-border/40">
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>

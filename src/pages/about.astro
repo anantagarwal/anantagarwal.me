@@ -1,0 +1,70 @@
+---
+import AboutLayout from "@/layouts/AboutLayout.astro";
+import Timeline from "@/components/Timeline.astro";
+---
+
+<AboutLayout frontmatter={{ title: "About" }}>
+  <div class="mt-8 font-sans">
+    <!-- Introduction Section -->
+    <div class="space-y-4 text-base leading-relaxed text-foreground/85 sm:text-lg">
+      <p>
+        I am a software engineer and architect with{" "}
+        <strong>19+ years of experience</strong> designing, architecting, and
+        delivering enterprise-grade applications. My career centers on building
+        high-performance, secure, and resilient distributed systems - with deep
+        domain expertise in core banking, payment networks, and financial
+        platforms.
+      </p>
+      <p>
+        Passionate about software craftsmanship, I focus on clean architecture,
+        maintainable code, and solving complex engineering challenges through
+        pragmatic design, simplicity, and long-term maintainability.
+      </p>
+    </div>
+
+    <!-- Core Philosophy / Focus highlights -->
+    <div class="mt-8 grid gap-4 sm:grid-cols-3 not-prose">
+      <div class="rounded-xl border border-border/50 bg-muted/15 p-4.5 transition-colors hover:border-accent/40">
+        <div class="text-accent mb-1.5 text-base font-bold sm:text-lg">
+          Resilient Systems
+        </div>
+        <p class="text-xs leading-relaxed text-foreground/75 sm:text-sm">
+          Designing scalable, fault-tolerant architectures using Domain-Driven
+          Design (DDD), CQRS, Hexagonal patterns, and event-driven pipelines.
+        </p>
+      </div>
+
+      <div class="rounded-xl border border-border/50 bg-muted/15 p-4.5 transition-colors hover:border-accent/40">
+        <div class="text-accent mb-1.5 text-base font-bold sm:text-lg">
+          FinTech & Banking
+        </div>
+        <p class="text-xs leading-relaxed text-foreground/75 sm:text-sm">
+          End-to-end expertise in mission-critical banking engines, ISO 20022
+          clearing integrations, products/lending, and Open Banking APIs.
+        </p>
+      </div>
+
+      <div class="rounded-xl border border-border/50 bg-muted/15 p-4.5 transition-colors hover:border-accent/40">
+        <div class="text-accent mb-1.5 text-base font-bold sm:text-lg">
+          Agentic AI & Modern Tech
+        </div>
+        <p class="text-xs leading-relaxed text-foreground/75 sm:text-sm">
+          Architecting multi-agent systems, Model Context Protocol (MCP)
+          integrations, and AI-assisted workflows to accelerate engineering
+          delivery.
+        </p>
+      </div>
+    </div>
+
+    <!-- Subtle divider -->
+    <div class="my-12 border-t border-border/50"></div>
+
+    <!-- Experience section -->
+    <section class="not-prose">
+      <h2 class="text-xl font-bold tracking-wider text-foreground sm:text-2xl mb-8">
+        Experience
+      </h2>
+      <Timeline />
+    </section>
+  </div>
+</AboutLayout>

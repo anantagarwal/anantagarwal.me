@@ -281,6 +281,130 @@ const nextPost =
   }
   attachCopyButtons();
 
+  /** Initialize Mermaid and render diagrams dynamically.
+   * Reads CSS custom properties so diagrams adapt to light/dark themes.
+   * Supports theme switching (MutationObserver). */
+  async function initMermaid() {
+    const elements = document.querySelectorAll("pre.mermaid");
+    if (elements.length === 0) return;
+
+    // Dynamically load Mermaid library
+    const { default: mermaid } = await import(
+      "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
+    );
+
+    /** Read CSS custom properties and build a mermaid config object */
+    function getMermaidConfig() {
+      const styles = getComputedStyle(document.documentElement);
+      const v = name => styles.getPropertyValue(name).trim();
+      const isDark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+
+      const textColor = v("--mermaid-text");
+      const subgraphBg = v("--mermaid-subgraph-bg");
+
+      return {
+        startOnLoad: false,
+        theme: "base",
+        securityLevel: "loose",
+        themeVariables: {
+          primaryColor: v("--mermaid-primary"),
+          primaryBorderColor: v("--mermaid-primary-border"),
+          primaryTextColor: textColor,
+          secondaryColor: v("--mermaid-secondary"),
+          secondaryBorderColor: v("--mermaid-secondary-border"),
+          secondaryTextColor: textColor,
+          tertiaryColor: isDark ? "#1e293b" : "#f5f5f5",
+          tertiaryBorderColor: v("--mermaid-subgraph-border"),
+          tertiaryTextColor: textColor,
+          lineColor: v("--mermaid-line"),
+          textColor: textColor,
+          mainBkg: v("--mermaid-primary"),
+          nodeBorder: v("--mermaid-primary-border"),
+          nodeTextColor: textColor,
+          clusterBkg: subgraphBg,
+          clusterBorder: v("--mermaid-subgraph-border"),
+          titleColor: textColor,
+          edgeLabelBackground: subgraphBg,
+          fontSize: "14px",
+          /* Sequence diagram specific */
+          actorBkg: v("--mermaid-primary"),
+          actorBorder: v("--mermaid-primary-border"),
+          actorTextColor: textColor,
+          actorLineColor: v("--mermaid-line"),
+          signalColor: v("--mermaid-line"),
+          signalTextColor: textColor,
+          labelBoxBkgColor: v("--mermaid-primary"),
+          labelBoxBorderColor: v("--mermaid-primary-border"),
+          labelTextColor: textColor,
+          loopTextColor: textColor,
+          noteBkgColor: v("--mermaid-secondary"),
+          noteBorderColor: v("--mermaid-secondary-border"),
+          noteTextColor: textColor,
+          activationBorderColor: v("--mermaid-primary-border"),
+          activationBkgColor: v("--mermaid-primary"),
+          sequenceNumberColor: textColor,
+        },
+      };
+    }
+
+    mermaid.initialize(getMermaidConfig());
+
+    for (const element of elements) {
+      const code = element.textContent;
+      const id = "mermaid-" + Math.random().toString(36).substring(2, 9);
+      try {
+        const { svg } = await mermaid.render(id, code);
+        const container = document.createElement("div");
+        container.className =
+          "mermaid-container my-6 flex justify-center w-full overflow-x-auto";
+        container.setAttribute("data-original-code", code);
+        container.innerHTML = svg;
+        element.replaceWith(container);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Mermaid rendering error:", error);
+      }
+    }
+
+    if (window.mermaidObserver) {
+      window.mermaidObserver.disconnect();
+    }
+
+    window.mermaidObserver = new MutationObserver(async mutations => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-theme"
+        ) {
+          mermaid.initialize(getMermaidConfig());
+
+          const activeContainers =
+            document.querySelectorAll(".mermaid-container");
+          for (const container of activeContainers) {
+            const code = container.getAttribute("data-original-code");
+            if (!code) continue;
+            const id =
+              "mermaid-theme-" + Math.random().toString(36).substring(2, 9);
+            try {
+              const { svg } = await mermaid.render(id, code);
+              container.innerHTML = svg;
+            } catch (error) {
+              // eslint-disable-next-line no-console
+              console.error("Mermaid re-rendering error:", error);
+            }
+          }
+        }
+      }
+    });
+
+    window.mermaidObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  }
+  initMermaid();
+
   /* Go to page start after page swap */
   document.addEventListener("astro:after-swap", () =>
     window.scrollTo({ left: 0, top: 0, behavior: "instant" })

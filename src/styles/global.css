@@ -10,6 +10,16 @@ html[data-theme="light"] {
   --accent: #006cac;
   --muted: #e6e6e6;
   --border: #ece9e9;
+
+  /* Mermaid theme variables */
+  --mermaid-primary: #e3f2fd;
+  --mermaid-primary-border: #1e88e5;
+  --mermaid-secondary: #fff3e0;
+  --mermaid-secondary-border: #fb8c00;
+  --mermaid-line: #546e7a;
+  --mermaid-text: #282728;
+  --mermaid-subgraph-bg: #f9f9f9;
+  --mermaid-subgraph-border: #ece9e9;
 }
 
 html[data-theme="dark"] {
@@ -18,6 +28,16 @@ html[data-theme="dark"] {
   --accent: #ff6b01;
   --muted: #343f60;
   --border: #ab4b08;
+
+  /* Mermaid theme variables */
+  --mermaid-primary: #293548;
+  --mermaid-primary-border: #3b82f6;
+  --mermaid-secondary: #3d2a15;
+  --mermaid-secondary-border: #f97316;
+  --mermaid-line: #94a3b8;
+  --mermaid-text: #eaedf3;
+  --mermaid-subgraph-bg: #1e2535;
+  --mermaid-subgraph-border: #334155;
 }
 
 @theme inline {
@@ -66,4 +86,145 @@ html[data-theme="dark"] {
 /* Anything that has been anchored to should have extra scroll margin */
 :target {
   scroll-margin-block: 1rem;
+}
+
+/* ==========================================================================
+   Mermaid Diagrams Styling (Mermaid v11)
+   
+   v11 renders node/edge labels inside <foreignObject> as HTML elements
+   (span.nodeLabel, span.edgeLabel, p tags) — NOT SVG <text> elements.
+   We must use `color` for HTML text and `fill` for SVG text (sequence
+   diagrams still use SVG text elements).
+   ========================================================================== */
+
+.mermaid-container svg {
+  background: transparent !important;
+}
+
+/* ---------- Subgraphs / Clusters ---------- */
+.mermaid-container .cluster rect,
+.mermaid-container .subgraph rect {
+  fill: var(--mermaid-subgraph-bg) !important;
+  stroke: var(--mermaid-subgraph-border) !important;
+  stroke-width: 1.5px !important;
+}
+.mermaid-container .cluster-label .nodeLabel,
+.mermaid-container .subgraph-title {
+  color: var(--mermaid-text) !important;
+  fill: var(--mermaid-text) !important;
+  font-weight: bold !important;
+}
+
+/* ---------- All text (catch-all) ---------- */
+/* SVG <text> elements (sequence diagrams, autonumber, etc.) */
+.mermaid-container text {
+  fill: var(--mermaid-text) !important;
+}
+/* HTML text inside foreignObject (flowchart nodes, edge labels) */
+.mermaid-container foreignObject {
+  color: var(--mermaid-text) !important;
+}
+.mermaid-container .nodeLabel,
+.mermaid-container .labelText,
+.mermaid-container .label {
+  color: var(--mermaid-text) !important;
+  fill: var(--mermaid-text) !important;
+}
+.mermaid-container .nodeLabel p,
+.mermaid-container .edgeLabel p,
+.mermaid-container .label p {
+  color: var(--mermaid-text) !important;
+}
+
+/* ---------- Node Styling via classDef ---------- */
+/* In mermaid v11 DOM: <g class="node control"> or <g class="node data"> */
+.mermaid-container .node.control > :is(rect, circle, polygon, path, ellipse),
+.mermaid-container .node.control .basic {
+  fill: var(--mermaid-primary) !important;
+  stroke: var(--mermaid-primary-border) !important;
+}
+
+.mermaid-container .node.data > :is(rect, circle, polygon, path, ellipse),
+.mermaid-container .node.data .basic {
+  fill: var(--mermaid-secondary) !important;
+  stroke: var(--mermaid-secondary-border) !important;
+}
+
+/* ---------- Edges / Connectors ---------- */
+.mermaid-container .edgePath .path,
+.mermaid-container .flowchart-link {
+  stroke: var(--mermaid-line) !important;
+  stroke-width: 1.5px !important;
+}
+.mermaid-container marker path {
+  fill: var(--mermaid-line) !important;
+  stroke: var(--mermaid-line) !important;
+}
+
+/* ---------- Edge Labels ---------- */
+.mermaid-container .edgeLabel {
+  background-color: var(--mermaid-subgraph-bg) !important;
+  color: var(--mermaid-text) !important;
+}
+.mermaid-container .edgeLabel rect,
+.mermaid-container .labelBkg {
+  fill: var(--mermaid-subgraph-bg) !important;
+  opacity: 1 !important;
+}
+.mermaid-container .edgeLabel span,
+.mermaid-container .edgeLabel p {
+  color: var(--mermaid-text) !important;
+  background: var(--mermaid-subgraph-bg) !important;
+}
+
+/* ---------- Sequence Diagrams ---------- */
+.mermaid-container .actor {
+  fill: var(--mermaid-primary) !important;
+  stroke: var(--mermaid-primary-border) !important;
+}
+.mermaid-container .actor text {
+  fill: var(--mermaid-text) !important;
+}
+.mermaid-container .actor-line {
+  stroke: var(--mermaid-line) !important;
+}
+.mermaid-container .messageLine0,
+.mermaid-container .messageLine1 {
+  stroke: var(--mermaid-line) !important;
+}
+.mermaid-container .messageText {
+  fill: var(--mermaid-text) !important;
+  color: var(--mermaid-text) !important;
+}
+.mermaid-container .note {
+  fill: var(--mermaid-secondary) !important;
+  stroke: var(--mermaid-secondary-border) !important;
+}
+.mermaid-container .noteText {
+  fill: var(--mermaid-text) !important;
+}
+.mermaid-container .activation0,
+.mermaid-container .activation1,
+.mermaid-container .activation2 {
+  fill: var(--mermaid-primary) !important;
+  stroke: var(--mermaid-primary-border) !important;
+}
+.mermaid-container .loopLine {
+  stroke: var(--mermaid-line) !important;
+}
+.mermaid-container .loopText,
+.mermaid-container .loopText tspan {
+  fill: var(--mermaid-text) !important;
+}
+.mermaid-container .labelBox {
+  fill: var(--mermaid-primary) !important;
+  stroke: var(--mermaid-primary-border) !important;
+}
+
+/* Autonumber badges */
+.mermaid-container .sequenceNumber {
+  fill: var(--background) !important;
+}
+.mermaid-container rect.sequenceNumber {
+  fill: var(--mermaid-line) !important;
 }
