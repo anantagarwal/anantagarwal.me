@@ -303,7 +303,9 @@
     fill: var(--text-primary) !important;
   }
   pre.mermaid .actor-line {
-    stroke: var(--line-divider-dash) !important;
+    stroke: var(--text-secondary) !important;
+    stroke-opacity: 0.45;
+    stroke-width: 1px;
     stroke-dasharray: 3 4;
   }
   pre.mermaid .messageLine0,
