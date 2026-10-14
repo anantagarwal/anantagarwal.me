@@ -6,17 +6,40 @@ import Timeline from "@/components/Timeline.astro";
 <AboutLayout frontmatter={{ title: "About" }}>
   <div class="font-sans">
     <!-- Introduction Section -->
-    <div class="space-y-4 text-base leading-relaxed text-text-secondary sm:text-lg font-normal">
-      <p>
-        I'm a software engineer with 19+ years of experience designing and
-        delivering enterprise applications, from frontend to backend, mostly on
-        open-source technologies. I enjoy building secure, scalable systems
-        and care about clean architecture and maintainable code.
-      </p>
-      <p>
-        I like solving hard engineering problems with pragmatic design. For me
-        that means keeping things simple and building for the long term.
-      </p>
+    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
+      <div class="shrink-0">
+        <a
+          href="https://gravatar.com/anantagarwal"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group block relative"
+          title="Anant Agarwal on Gravatar"
+          aria-label="Anant Agarwal on Gravatar"
+        >
+          <img
+            src="https://gravatar.com/avatar/ded193c5b5655aa9aba81cbedb44542cdd9e31e070b8f7b92a045c0e9b1d7aee?s=400"
+            alt="Anant Agarwal"
+            class="size-28 sm:size-36 rounded-full border border-line-structure bg-surface-1 p-1 object-cover shadow-xs transition-all duration-300 group-hover:border-line-cta group-hover:shadow-sm"
+            width="400"
+            height="400"
+            loading="eager"
+            decoding="async"
+          />
+        </a>
+      </div>
+
+      <div class="space-y-4 text-base leading-relaxed text-text-secondary sm:text-lg font-normal flex-1">
+        <p>
+          I'm a software engineer with 19+ years of experience designing and
+          delivering enterprise applications, from frontend to backend, mostly
+          on open-source technologies. I enjoy building secure, scalable systems
+          and care about clean architecture and maintainable code.
+        </p>
+        <p>
+          I like solving hard engineering problems with pragmatic design. For me
+          that means keeping things simple and building for the long term.
+        </p>
+      </div>
     </div>
 
     <!-- Subtle divider -->
