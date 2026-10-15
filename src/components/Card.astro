@@ -19,7 +19,6 @@ const postDate = new Intl.DateTimeFormat("en-US", {
 }).format(new Date(pubDatetime));
 
 const primaryTag = tags && tags.length > 0 ? tags[0] : "Article";
-
 ---
 
 <li class="list-none">
@@ -34,27 +33,25 @@ const primaryTag = tags && tags.length > 0 ? tags[0] : "Article";
         </span>
       </div>
 
-      {
-        variant === "h2" ? (
-          <h2
-            transition:name={slugifyStr(title)}
-            class="text-left text-[15px] sm:text-[16px] font-medium text-text-primary leading-snug"
-          >
-            <span class="langfuse-highlight">
-              <span>{title}</span>
-            </span>
-          </h2>
-        ) : (
-          <h3
-            transition:name={slugifyStr(title)}
-            class="text-left text-[15px] sm:text-[16px] font-medium text-text-primary leading-snug"
-          >
-            <span class="langfuse-highlight">
-              <span>{title}</span>
-            </span>
-          </h3>
-        )
-      }
+      {variant === "h2" ? (
+        <h2
+          transition:name={slugifyStr(title)}
+          class="text-left text-[15px] sm:text-[16px] font-medium text-text-primary leading-snug"
+        >
+          <span class="langfuse-highlight">
+            <span>{title}</span>
+          </span>
+        </h2>
+      ) : (
+        <h3
+          transition:name={slugifyStr(title)}
+          class="text-left text-[15px] sm:text-[16px] font-medium text-text-primary leading-snug"
+        >
+          <span class="langfuse-highlight">
+            <span>{title}</span>
+          </span>
+        </h3>
+      )}
 
       {description && (
         <p class="text-[13px] text-text-tertiary line-clamp-2 leading-relaxed">

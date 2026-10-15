@@ -46,6 +46,7 @@ graph LR
 ```
 
 This model works well for tens of clients, but quickly degrades at thousands of concurrent connections:
+
 1. **Thread Context Switching Overhead**: The CPU spends valuable cycles saving and restoring CPU registers, program counters, and stack pointers as it preemptively switches between threads.
 2. **Lock Contention**: When multiple threads mutate shared in-memory data (like a cache or database table), you need mutexes, semaphores, or spinlocks. Threads spend significant time waiting in lock queues rather than doing real work.
 3. **Memory Footprint**: Each OS thread allocates its own stack space (typically 1–8 MB), consuming gigabytes of memory just to keep idle connections open.
@@ -59,17 +60,21 @@ Redis avoids all of this by running a single main thread. But a single thread ha
 When a client communicates with Redis over TCP, data travels through a network socket represented by the operating system as a file descriptor (FD).
 
 ### 1. Blocking I/O
+
 By default, network sockets are **blocking**. If a thread calls `read()` on a socket with no incoming data, the OS suspends the thread until packets arrive from the network card. With a single-threaded server, if Client 1 is idle, all other clients are completely starved.
 
 ### 2. Non-Blocking Sockets (`O_NONBLOCK`)
+
 To prevent starvation, Redis configures client sockets in non-blocking mode. When you call `read()` on a non-blocking socket:
+
 - If data is available, it returns the bytes immediately.
 - If no data is available, it returns immediately with an error code like `EAGAIN` or `EWOULDBLOCK` without halting the thread.
 
-However, non-blocking I/O introduces a new problem: **busy polling**. If you loop through 10,000 sockets checking each one for data, your CPU runs at 100% just asking *"Got data yet? No? Got data yet?"*
+However, non-blocking I/O introduces a new problem: **busy polling**. If you loop through 10,000 sockets checking each one for data, your CPU runs at 100% just asking _"Got data yet? No? Got data yet?"_
 
-What we really need is a way to tell the operating system:  
-> *"Wake me up only when something interesting actually happens on any of these 10,000 sockets."*
+What we really need is a way to tell the operating system:
+
+> _"Wake me up only when something interesting actually happens on any of these 10,000 sockets."_
 
 This is where **I/O Multiplexing** comes in.
 
@@ -82,6 +87,7 @@ Operating systems provide multiplexing mechanisms so a single thread can monitor
 ### The Evolution: `select` vs. `epoll`
 
 Early Unix systems used `select()` and `poll()`:
+
 - **`select()` / `poll()` (`O(N)`)**: You hand an array of all monitored sockets to the kernel. Every time you check, the kernel scans through every socket in the list. Even if only 1 socket out of 10,000 has data, the CPU still iterates through all 10,000.
 - **`epoll` (`O(1)` on Linux)**: Introduced in Linux 2.6, `epoll` completely changes the mechanism by being **event-driven**.
 
@@ -116,15 +122,15 @@ graph TD
 
 1. **`epoll_create()`**: Creates an epoll instance in the kernel and returns a file descriptor referencing it.
 2. **`epoll_ctl()`**: Adds, modifies, or removes socket descriptors in the interest list. When a socket is registered (e.g., listening for readable `EPOLLIN` or writable `EPOLLOUT` events), the kernel tracks it in an efficient Red-Black tree.
-3. **`epoll_wait()`**: Suspends the calling thread until one or more monitored sockets have events ready. When a network packet arrives, the network card triggers an interrupt, and the OS puts that specific socket onto a **Ready List**. `epoll_wait()` returns *only* the ready sockets in `O(1)` time relative to total connections.
+3. **`epoll_wait()`**: Suspends the calling thread until one or more monitored sockets have events ready. When a network packet arrives, the network card triggers an interrupt, and the OS puts that specific socket onto a **Ready List**. `epoll_wait()` returns _only_ the ready sockets in `O(1)` time relative to total connections.
 
-*(Note: On macOS and BSD systems, Redis uses `kqueue`, which operates on the same event-driven principle).*
+_(Note: On macOS and BSD systems, Redis uses `kqueue`, which operates on the same event-driven principle)._
 
 ---
 
 ## How Redis Leverages `epoll`: The Event Loop
 
-Redis wraps OS-level I/O multiplexers inside a unified **Event Loop**. 
+Redis wraps OS-level I/O multiplexers inside a unified **Event Loop**.
 
 Instead of waiting for client requests, the Redis main thread stays in a continuous cycle:
 
@@ -132,15 +138,15 @@ Instead of waiting for client requests, the Redis main thread stays in a continu
 graph TD
   Start([Start Loop Iteration]) --> EpollWait["1. Call epoll_wait(timeout)"]
   EpollWait --> HasEvents{Any ready events?}
-  
+
   HasEvents -->|No| EpollWait
   HasEvents -->|Yes| ProcessEvents["2. Process Ready File Descriptors"]
-  
+
   ProcessEvents --> CheckType{Event Type}
   CheckType -->|"Server Socket (New Connection)"| Accept["accept() & register client fd with epoll_ctl()"]
   CheckType -->|"Client Socket (Readable)"| ReadParse["read() bytes, parse RESP, execute in RAM"]
   CheckType -->|"Client Socket (Writable)"| WriteOut["write() buffered response back to client"]
-  
+
   Accept --> TimeEvents["3. Process Time Events (cron, expiry)"]
   ReadParse --> TimeEvents
   WriteOut --> TimeEvents
@@ -162,7 +168,7 @@ When a client runs a command like `SET user:100 "Anant"`:
 
 ## The Secret Ingredient: Why Single-Threaded Works
 
-`epoll` is fast, but that alone doesn't explain why Redis outperforms multi-threaded architectures. 
+`epoll` is fast, but that alone doesn't explain why Redis outperforms multi-threaded architectures.
 
 The secret is the combination of **`epoll` + In-Memory Execution**:
 
@@ -174,7 +180,7 @@ The secret is the combination of **`epoll` + In-Memory Execution**:
 
 ## Minimal Event Loop in Java (Java NIO)
 
-To see this in action without digging through C code, here is a simplified implementation of the Redis event loop using Java NIO. 
+To see this in action without digging through C code, here is a simplified implementation of the Redis event loop using Java NIO.
 
 In the JVM on Linux, `java.nio.channels.Selector` maps directly to OS-level `epoll` (`epoll_create`, `epoll_ctl`, and `epoll_wait`):
 
@@ -261,7 +267,7 @@ public class MiniRedisServer {
 
         buffer.flip();
         String command = new String(buffer.array(), 0, buffer.limit()).trim();
-        
+
         // Execute against RAM database (sub-microsecond execution)
         String response = executeCommand(command);
 
@@ -295,6 +301,7 @@ public class MiniRedisServer {
 ```
 
 Notice what makes this model so powerful:
+
 - There are **no worker thread pools**, no synchronization locks, and no thread context switches.
 - `selector.select()` sleeps gracefully until the OS kernel signals network traffic via `epoll`.
 - Processing each request in memory takes less time than the network transmission itself.
@@ -306,12 +313,14 @@ Notice what makes this model so powerful:
 The single-threaded event loop is exceptionally fast, but it has one famous vulnerability: **Head-of-Line Blocking**.
 
 Because every query runs sequentially on the main thread:
+
 - If a client runs a fast `O(1)` command like `GET key` or `SET key val`, Redis finishes in microseconds.
 - If a client runs a slow `O(N)` command like `KEYS *` over a 50-million-key database, or deletes a massive set with millions of elements, **the single execution thread freezes**.
 
 While that single command runs, `epoll_wait()` is not called, no other socket reads take place, and every other client's request sits waiting in the OS network queue.
 
 This is why Redis best practices strongly advise:
+
 - Never run `KEYS *` in production (use `SCAN` instead).
 - Use asynchronous unlinking (`UNLINK` instead of `DEL`) so memory deallocation is offloaded to a background thread.
 
@@ -319,7 +328,7 @@ This is why Redis best practices strongly advise:
 
 ## Beyond the Single Thread: Background Threads & Threaded I/O
 
-While Redis's *core command execution* is strictly single-threaded, modern Redis is not completely single-threaded:
+While Redis's _core command execution_ is strictly single-threaded, modern Redis is not completely single-threaded:
 
 1. **Background I/O Threads (BIO)**: Heavy, slow tasks-such as flushing data to disk (`fsync`), closing file descriptors, and lazy-freeing large memory allocations-are delegated to separate background threads so the main loop is never held up.
 2. **Threaded I/O (Redis 6+)**: Reading bytes off TCP sockets and parsing RESP protocol payloads can consume CPU on high-throughput 100GbE networks. Redis 6 introduced multi-threaded network I/O: worker threads read and write network buffers, but **the actual command execution on data remains strictly single-threaded**.
@@ -350,4 +359,4 @@ By letting the operating system handle connection monitoring and keeping executi
 
 ---
 
-*Want to explore a complete working implementation? Check out the source code on GitHub: [anantagarwal/java-redis-server](https://github.com/anantagarwal/java-redis-server).*
+_Want to explore a complete working implementation? Check out the source code on GitHub: [anantagarwal/java-redis-server](https://github.com/anantagarwal/java-redis-server)._

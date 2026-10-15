@@ -31,14 +31,13 @@ const formatter = new Intl.DateTimeFormat("en-US", {
 const date = formatter.format(targetDate);
 ---
 
-<div class:list={["flex items-center gap-1.5 font-mono text-xs text-text-tertiary tabular-nums", className]}>
+<div
+  class:list={[
+    "flex items-center gap-1.5 font-mono text-xs text-text-tertiary tabular-nums",
+    className,
+  ]}
+>
   <IconCalendar class="size-3.5 inline-block text-text-tertiary" />
-  {
-    isModified && (
-      <span>
-        Updated:
-      </span>
-    )
-  }
+  {isModified && <span>Updated:</span>}
   <time datetime={targetDate.toISOString()}>{date}</time>
 </div>

@@ -24,6 +24,7 @@ This post explains the internal architecture of Kong Gateway, tracing how NGINX,
 ## Problem Statement
 
 Microservice architectures split business logic into tens or hundreds of discrete network endpoints. This introduces a set of non-functional requirements that every service requires:
+
 - Authentication and token verification
 - Dynamic path routing and service discovery
 - Traffic control and distributed rate limiting
@@ -100,6 +101,7 @@ flowchart TB
 ### 1. NGINX Master and Event-Driven Workers
 
 Kong runs as a standard NGINX master-worker process topology:
+
 - **Master Process:** Runs with root privileges, parses bootstrap flags, opens privileged listening ports (such as 80 and 443), allocates shared memory zones, and supervises worker lifecycles. It does not handle client traffic.
 - **Worker Processes:** Unprivileged worker processes spawned by the master. Each worker runs a single-threaded, non-blocking event loop driven by operating system notification primitives (`epoll` on Linux, `kqueue` on BSD). Workers handle network sockets independently.
 
@@ -111,7 +113,7 @@ The key innovation is the **cosocket** (coroutine-based socket). When a Lua scri
 
 ### 3. In-Memory Router Engine
 
-When Kong receives an HTTP request, it must rapidly identify which **Service** (the target backend) and **Route** (the matching rule) apply. 
+When Kong receives an HTTP request, it must rapidly identify which **Service** (the target backend) and **Route** (the matching rule) apply.
 
 Older gateways used regular expression loops that degraded linearly (`O(N)`) as the route count grew. Kong builds an in-memory prefix tree (radix tree) indexed by URI segments, paired with hash tables for HTTP methods, hostnames, and headers. Route matching runs in `O(K)` time, where `K` is the length of the request path, regardless of whether Kong hosts 10 or 10,000 routes.
 
@@ -120,6 +122,7 @@ Older gateways used regular expression loops that degraded linearly (`O(N)`) as 
 Because each NGINX worker process runs in its own isolated memory address space, workers cannot share standard Lua tables directly without serialization overhead.
 
 Kong uses NGINX shared memory dictionaries (`lua_shared_dict`). These memory zones are pre-allocated by the master process during startup and mapped into the virtual address space of every worker. They contain:
+
 - In-memory routing trees and service definitions (`kong_core_db_cache`)
 - Rate limiting counters and sliding window buckets
 - Cached cryptographic certificates and public keys
@@ -136,6 +139,7 @@ Each plugin defines a static `PRIORITY` integer. At each phase, Kong executes pl
 ### 6. Configuration Plane and Data Synchronization
 
 Kong operates in two primary modes:
+
 - **Database-Backed Mode:** Routes, services, and plugins are stored in a PostgreSQL database. When an operator mutates state via the Admin API, Kong writes the change to the database and broadcasts an invalidation event. Workers poll or listen for these events, clearing stale keys from their local `lua_shared_dict` cache.
 - **DB-less and Hybrid Mode:** In modern deployments, Kong Data Planes run entirely without a database. The Control Plane compiles configuration into a declarative snapshot (via YAML or LMDB format) and streams it over a secure WebSocket connection to all Data Planes. The Data Planes load the snapshot directly into memory without disk writes or proxy reloads.
 
@@ -182,6 +186,7 @@ sequenceDiagram
 ### 1. The In-Memory Router Engine: Radix Trees and Multi-Attribute Filtering
 
 In a basic web server, routing only checks path prefixes. In an enterprise API gateway, routing is multi-dimensional. A single incoming HTTP request must match against four distinct dimensions simultaneously:
+
 - **Request Path:** Exact paths, prefix wildcards, or regex patterns.
 - **HTTP Method:** `GET`, `POST`, `PUT`, `DELETE`, etc.
 - **Host Header / SNI:** Exact hostnames (`api.example.com`) or wildcard domains (`*.example.com`).
@@ -221,6 +226,7 @@ flowchart TB
 A standard trie stores each character on a separate edge, requiring many pointer dereferences. A radix tree (compact prefix tree) merges common prefixes into a single compressed edge.
 
 For instance, paths `/api/v1/users`, `/api/v1/users/{id}/profile`, and `/api/v1/orders` all share the common edge `/api/v1/`. Each node in Kong's router tree stores:
+
 - `prefix`: The string literal for the compressed path edge.
 - `children`: A hash map of child branches indexed by the first character of the next segment.
 - `param_child`: A handler for parameterized variable segments (such as `{id}`).
@@ -243,6 +249,7 @@ Once the radix tree locates the most specific path node, Kong evaluates the cand
    - `HEAD` = `1 << 5` (32)
 
    If a route permits `GET` and `HEAD`, its bitmask is `1 | 32 = 33`. When a request arrives with method `GET` (mask `1`), Kong checks compatibility with a single CPU instruction:
+
    ```text
    is_allowed = (route.method_mask & request.method_mask) != 0
    ```
@@ -268,14 +275,15 @@ If multiple routes match the same request, Kong avoids ambiguity through a deter
 
 Consider four routes registered in Kong:
 
-| Route | Host | Path | Method | Target Service |
-| --- | --- | --- | --- | --- |
-| **Route 1** | `*.example.com` | `/api/v1/` | `ANY` | `Fallback-Service` |
-| **Route 2** | `api.example.com` | `/api/v1/users` | `ANY` | `User-Service` |
-| **Route 3** | `api.example.com` | `/api/v1/users` | `POST` | `User-Create-Service` |
-| **Route 4** | `api.example.com` | `/api/v1/users/{id}/profile` | `GET` | `User-Profile-Service` |
+| Route       | Host              | Path                         | Method | Target Service         |
+| ----------- | ----------------- | ---------------------------- | ------ | ---------------------- |
+| **Route 1** | `*.example.com`   | `/api/v1/`                   | `ANY`  | `Fallback-Service`     |
+| **Route 2** | `api.example.com` | `/api/v1/users`              | `ANY`  | `User-Service`         |
+| **Route 3** | `api.example.com` | `/api/v1/users`              | `POST` | `User-Create-Service`  |
+| **Route 4** | `api.example.com` | `/api/v1/users/{id}/profile` | `GET`  | `User-Profile-Service` |
 
 Now trace an incoming request:
+
 ```http
 GET https://api.example.com/api/v1/users/42/profile
 ```
@@ -291,13 +299,14 @@ GET https://api.example.com/api/v1/users/42/profile
 5. **Specificity Resolution:**
    - `Route 4` matches an exact path of length 27, an exact host, and a specific HTTP method.
    - `Route 1` matches a short prefix path of length 8, a wildcard host, and an `ANY` method.
-   `Route 4` wins with higher specificity and forwards the request to `User-Profile-Service`.
+     `Route 4` wins with higher specificity and forwards the request to `User-Profile-Service`.
 
 ---
 
 ### 2. Slab Allocator for Shared Memory
 
 NGINX `lua_shared_dict` implements a buddy-system slab allocator paired with a red-black tree and a doubly linked list:
+
 - **Red-black tree:** Indexes keys for `O(log N)` lookup and insertion.
 - **Doubly linked list:** Tracks entry access order to implement strict Least Recently Used (LRU) eviction when memory is exhausted.
 - **Fixed-size memory slabs:** Pre-allocates memory slots (chunks of 32, 64, 128 bytes) to eliminate runtime OS memory fragmentation.
@@ -313,6 +322,7 @@ estimated_count = count_prev * (1 - fraction) + count_curr
 ```
 
 Where:
+
 - `count_prev`: The total number of requests recorded in the previous time window (for example, the previous 60-second bucket).
 - `count_curr`: The counter of requests recorded so far in the current active time window.
 - `fraction`: The proportion of the current window that has already elapsed (for example, at 15 seconds into a 60-second window, `fraction = 15 / 60 = 0.25`).
@@ -324,6 +334,7 @@ The increment operation executes via the `ngx.shared.DICT:incr` primitive. It ut
 ### 4. Upstream Load Balancing and Health Checks
 
 Kong manages upstreams through an internal ring balancer based on consistent hashing and weighted round-robin:
+
 - **Passive Health Checking (Circuit Breaking):** When an upstream connection returns repeated timeouts or 5xx status codes, the worker marks the target as unhealthy in shared memory. Every other worker immediately stops routing traffic to that instance.
 - **Active Health Checking:** A designated background timer in a single worker process periodically dispatches asynchronous probe requests to all registered targets. When an unhealthy target passes repeated health checks, the worker flags it as healthy, and traffic resumes automatically.
 
@@ -334,6 +345,7 @@ Kong manages upstreams through an internal ring balancer based on consistent has
 A critical architectural constraint of LuaJIT on 64-bit platforms is its **2 GB garbage collection memory ceiling**. LuaJIT uses 32-bit tagged pointers internally to optimize register allocation and execution speed. If the Lua heap exceeds 2 GB, the worker aborts with an out-of-memory error.
 
 Kong protects against this limit through strict memory partitioning:
+
 - **Transient Lua Heap:** Handles short-lived per-request state (request headers, intermediate strings). The garbage collector sweeps these objects rapidly.
 - **Shared Memory Slabs:** Stores routing tables, configuration entities, certificate stores, and rate limit counters outside the LuaJIT GC heap, in raw C memory pools managed by NGINX.
 - **LMDB (Off-Heap Mapped Database):** In modern DB-less modes, route snapshots sit in memory-mapped files accessed directly by pointer, keeping the LuaJIT heap footprint tiny (often under 50 MB per worker).
@@ -342,18 +354,19 @@ Kong protects against this limit through strict memory partitioning:
 
 Kong achieves high throughput because its abstractions map directly to modern Linux kernel networking primitives.
 
-| Primitive / Syscall | Role in Kong | Architectural Rationale |
-| --- | --- | --- |
-| `epoll_create1` / `epoll_ctl` / `epoll_wait` | I/O multiplexing | Enables a single worker thread to monitor tens of thousands of open client and upstream sockets without thread context switching. |
-| `SO_REUSEPORT` | Socket load balancing | Allows multiple independent NGINX worker processes to bind to the same network interface and port. The Linux kernel distributes incoming connections across workers, eliminating lock contention and thundering herd issues. |
-| `accept4(2)` | Connection acceptance | Atomically accepts a new TCP connection and marks its file descriptor as non-blocking (`SOCK_NONBLOCK`), saving an explicit `fcntl` syscall per connection. |
-| `TCP_NODELAY` | Network latency | Disables Nagle's algorithm on client and upstream sockets, transmitting packets immediately rather than buffering small writes. |
-| `writev(2)` | Vectored I/O | Transmits HTTP headers and payload chunks gathered from multiple memory buffers in a single system call. |
-| `mmap(2)` | Configuration storage | Maps the declarative LMDB configuration database directly into the virtual address space of all workers, providing copy-free, lock-free reads. |
+| Primitive / Syscall                          | Role in Kong          | Architectural Rationale                                                                                                                                                                                                      |
+| -------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `epoll_create1` / `epoll_ctl` / `epoll_wait` | I/O multiplexing      | Enables a single worker thread to monitor tens of thousands of open client and upstream sockets without thread context switching.                                                                                            |
+| `SO_REUSEPORT`                               | Socket load balancing | Allows multiple independent NGINX worker processes to bind to the same network interface and port. The Linux kernel distributes incoming connections across workers, eliminating lock contention and thundering herd issues. |
+| `accept4(2)`                                 | Connection acceptance | Atomically accepts a new TCP connection and marks its file descriptor as non-blocking (`SOCK_NONBLOCK`), saving an explicit `fcntl` syscall per connection.                                                                  |
+| `TCP_NODELAY`                                | Network latency       | Disables Nagle's algorithm on client and upstream sockets, transmitting packets immediately rather than buffering small writes.                                                                                              |
+| `writev(2)`                                  | Vectored I/O          | Transmits HTTP headers and payload chunks gathered from multiple memory buffers in a single system call.                                                                                                                     |
+| `mmap(2)`                                    | Configuration storage | Maps the declarative LMDB configuration database directly into the virtual address space of all workers, providing copy-free, lock-free reads.                                                                               |
 
 ### Why Single-Threaded Event Loops Outperform Multi-Threading for Gateways
 
 In a multi-threaded architecture (common in older Java servers), each request occupies a thread or thread-pool worker. As concurrency grows to 50,000 connections:
+
 - Thread stacks consume gigabytes of host RAM.
 - The operating system scheduler wastes significant CPU cycles performing context switches between active threads.
 - Shared data structures require mutexes, which stall CPU cores under lock contention.
@@ -378,13 +391,13 @@ When upstreams are defined by hostnames rather than static IP addresses, Kong us
 
 ### 2. Architectural Trade-offs
 
-| Dimension | Kong (NGINX + LuaJIT) | Envoy (C++) | Go-based Gateways (Traefik) |
-| --- | --- | --- | --- |
-| **Concurrency Model** | Multi-process, single-threaded workers | Multi-threaded worker event loops | Multi-threaded goroutine scheduler |
-| **Extensibility** | Dynamic Lua scripts and WASM | Compiled C++ filters or WASM | Go plugins or internal middleware |
-| **Fault Isolation** | High: crashing worker process is isolated and restarted by master | Medium: segmentation fault kills entire multi-threaded proxy | High: panics caught per goroutine, but shared memory corruption risks |
-| **Memory Ceiling** | 2 GB Lua heap limit (mitigated by shm/LMDB) | Bounded only by host memory | Bounded only by host memory |
-| **Configuration Updates** | Dynamic in-memory updates via shm/LMDB | Dynamic xDS gRPC streaming API | Dynamic internal channels and config reloads |
+| Dimension                 | Kong (NGINX + LuaJIT)                                             | Envoy (C++)                                                  | Go-based Gateways (Traefik)                                           |
+| ------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------- |
+| **Concurrency Model**     | Multi-process, single-threaded workers                            | Multi-threaded worker event loops                            | Multi-threaded goroutine scheduler                                    |
+| **Extensibility**         | Dynamic Lua scripts and WASM                                      | Compiled C++ filters or WASM                                 | Go plugins or internal middleware                                     |
+| **Fault Isolation**       | High: crashing worker process is isolated and restarted by master | Medium: segmentation fault kills entire multi-threaded proxy | High: panics caught per goroutine, but shared memory corruption risks |
+| **Memory Ceiling**        | 2 GB Lua heap limit (mitigated by shm/LMDB)                       | Bounded only by host memory                                  | Bounded only by host memory                                           |
+| **Configuration Updates** | Dynamic in-memory updates via shm/LMDB                            | Dynamic xDS gRPC streaming API                               | Dynamic internal channels and config reloads                          |
 
 ## Minimal Pseudocode
 

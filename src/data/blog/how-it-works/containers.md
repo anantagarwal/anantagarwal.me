@@ -63,8 +63,8 @@ flowchart LR
 
 There are two halves: the kernel primitives that do the isolation, and the userspace stack that orchestrates them.
 
-1. **Namespaces** partition *visibility*. Each namespace type wraps one global resource so that processes inside see their own instance.
-2. **cgroups** partition *consumption*. They account for and limit CPU, memory, I/O and PIDs for a group of processes.
+1. **Namespaces** partition _visibility_. Each namespace type wraps one global resource so that processes inside see their own instance.
+2. **cgroups** partition _consumption_. They account for and limit CPU, memory, I/O and PIDs for a group of processes.
 3. **Union filesystem and image layers** provide the root filesystem. Layers are immutable and content-addressed, and a copy-on-write layer sits on top.
 4. **Security filters** (capabilities, seccomp, LSMs such as AppArmor and SELinux) shrink what the process may ask the kernel to do.
 5. **The runtime (runc)** is a small program that performs the syscalls in the right order and then `exec`s your command.
@@ -138,16 +138,16 @@ sequenceDiagram
 
 Each process has a set of namespace pointers in `task_struct->nsproxy`. A namespace type decides which global lookup table a syscall consults.
 
-| Namespace | Isolates | Effect |
-| --- | --- | --- |
-| `pid` | Process IDs | Child sees itself as PID 1. The host sees a different PID for the same process. |
-| `mnt` | Mount table | Private view of the filesystem tree. |
-| `net` | Interfaces, routes, sockets, iptables | Own `lo`, own port space. |
-| `uts` | Hostname, domain | Container can have its own hostname. |
-| `ipc` | SysV IPC, POSIX queues | No shared memory with the host. |
-| `user` | UID/GID mappings | UID 0 inside maps to an unprivileged UID outside. |
-| `cgroup` | cgroup root view | Container sees its own cgroup as `/`. |
-| `time` | Boot and monotonic clocks | Rarely used. |
+| Namespace | Isolates                              | Effect                                                                          |
+| --------- | ------------------------------------- | ------------------------------------------------------------------------------- |
+| `pid`     | Process IDs                           | Child sees itself as PID 1. The host sees a different PID for the same process. |
+| `mnt`     | Mount table                           | Private view of the filesystem tree.                                            |
+| `net`     | Interfaces, routes, sockets, iptables | Own `lo`, own port space.                                                       |
+| `uts`     | Hostname, domain                      | Container can have its own hostname.                                            |
+| `ipc`     | SysV IPC, POSIX queues                | No shared memory with the host.                                                 |
+| `user`    | UID/GID mappings                      | UID 0 inside maps to an unprivileged UID outside.                               |
+| `cgroup`  | cgroup root view                      | Container sees its own cgroup as `/`.                                           |
+| `time`    | Boot and monotonic clocks             | Rarely used.                                                                    |
 
 The PID namespace is a good example of the idea. A process has one PID per namespace level it is visible in. The kernel stores a `struct pid` with an array of `upid` entries, one per level. `getpid()` returns the number from the caller's namespace, and a process in a child namespace simply cannot name a process outside it.
 
@@ -189,15 +189,15 @@ Namespaces alone are not a security boundary. A root process in a container stil
 
 ## OS and System-Level Interactions
 
-| Syscall | Role |
-| --- | --- |
-| `clone(2)` / `clone3` | Create a process in new namespaces. |
-| `unshare(2)` | Move the calling process into new namespaces. |
-| `setns(2)` | Join an existing namespace. This is how `docker exec` works. |
-| `mount(2)` / `pivot_root(2)` | Build the new root and swap into it. |
-| `execve(2)` | Replace the runtime with the user program. |
-| `prctl(PR_SET_NO_NEW_PRIVS)` | Prevent privilege gain via setuid binaries. |
-| `seccomp(2)` | Install the syscall filter. |
+| Syscall                      | Role                                                         |
+| ---------------------------- | ------------------------------------------------------------ |
+| `clone(2)` / `clone3`        | Create a process in new namespaces.                          |
+| `unshare(2)`                 | Move the calling process into new namespaces.                |
+| `setns(2)`                   | Join an existing namespace. This is how `docker exec` works. |
+| `mount(2)` / `pivot_root(2)` | Build the new root and swap into it.                         |
+| `execve(2)`                  | Replace the runtime with the user program.                   |
+| `prctl(PR_SET_NO_NEW_PRIVS)` | Prevent privilege gain via setuid binaries.                  |
+| `seccomp(2)`                 | Install the syscall filter.                                  |
 
 Why `pivot_root` and not `chroot`? `chroot` only changes the root for path lookups of that process. The old root is still reachable through open file descriptors or by re-chrooting, and it remains in the mount table. `pivot_root` swaps the root mount of the mount namespace and lets you unmount the old one, so nothing is left to walk back to.
 
@@ -219,12 +219,12 @@ The scheduler is unaware of containers. It schedules tasks. cgroup CPU limits ar
 
 **Networking overhead.** veth plus bridge plus NAT adds per-packet cost and conntrack state. Host networking or CNI plugins with direct routing remove it at the cost of isolation.
 
-| Concern | Container | VM |
-| --- | --- | --- |
-| Startup | Milliseconds | Seconds |
-| Overhead | Near zero | Guest kernel and device emulation |
-| Isolation | Kernel policy | Hardware virtualization |
-| Kernel choice | Host only | Any |
+| Concern       | Container     | VM                                |
+| ------------- | ------------- | --------------------------------- |
+| Startup       | Milliseconds  | Seconds                           |
+| Overhead      | Near zero     | Guest kernel and device emulation |
+| Isolation     | Kernel policy | Hardware virtualization           |
+| Kernel choice | Host only     | Any                               |
 
 ## Minimal Pseudocode
 

@@ -14,7 +14,9 @@ const { tag, tagName, size = "sm" } = Astro.props;
     transition:name={tag}
     class:list={[
       "inline-flex items-center gap-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 font-mono text-text-secondary hover:text-text-primary transition-colors",
-      size === "sm" ? "px-2.5 py-0.5 text-xs" : "px-3.5 py-1 text-sm font-medium",
+      size === "sm"
+        ? "px-2.5 py-0.5 text-xs"
+        : "px-3.5 py-1 text-sm font-medium",
     ]}
   >
     <span class="text-text-tertiary">#</span>

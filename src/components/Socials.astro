@@ -8,20 +8,23 @@ export interface Props {
 const { centered = false } = Astro.props;
 ---
 
-<div class:list={["flex flex-wrap items-center gap-1.5", { "justify-center": centered }]}>
-  {
-    SOCIALS.map(social => (
-      <a
-        href={social.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="p-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-secondary hover:text-text-primary transition-colors inline-flex items-center justify-center"
-        title={social.linkTitle}
-        aria-label={social.linkTitle}
-      >
-        <social.icon class="size-4 fill-transparent stroke-current stroke-2" />
-        <span class="sr-only">{social.linkTitle}</span>
-      </a>
-    ))
-  }
+<div
+  class:list={[
+    "flex flex-wrap items-center gap-1.5",
+    { "justify-center": centered },
+  ]}
+>
+  {SOCIALS.map(social => (
+    <a
+      href={social.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="p-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-secondary hover:text-text-primary transition-colors inline-flex items-center justify-center"
+      title={social.linkTitle}
+      aria-label={social.linkTitle}
+    >
+      <social.icon class="size-4 fill-transparent stroke-current stroke-2" />
+      <span class="sr-only">{social.linkTitle}</span>
+    </a>
+  ))}
 </div>

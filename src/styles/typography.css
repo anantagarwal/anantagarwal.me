@@ -1,4 +1,4 @@
-@plugin '@tailwindcss/typography';
+@plugin "@tailwindcss/typography";
 
 @layer base {
   /* ===== Override default Tailwind Typography styles to match Langfuse ===== */
@@ -10,42 +10,42 @@
     h3,
     h4,
     th {
-      @apply text-text-primary font-medium tracking-tight;
+      @apply font-medium tracking-tight text-text-primary;
     }
 
     h2 {
-      @apply border-b border-line-structure pb-2.5 mt-10 mb-4 text-xl sm:text-2xl font-semibold;
+      @apply mt-10 mb-4 border-b border-line-structure pb-2.5 text-xl font-semibold sm:text-2xl;
     }
 
     h3 {
-      @apply mt-8 mb-3 text-lg sm:text-xl font-medium not-italic;
+      @apply mt-8 mb-3 text-lg font-medium not-italic sm:text-xl;
     }
 
     h4 {
-      @apply mt-6 mb-2 text-base sm:text-lg font-medium;
+      @apply mt-6 mb-2 text-base font-medium sm:text-lg;
     }
 
     p,
     ol,
     ul,
     figcaption {
-      @apply text-text-secondary leading-[1.75] text-[16px] sm:text-[17px];
+      @apply text-[16px] leading-[1.75] text-text-secondary sm:text-[17px];
     }
 
     strong {
-      @apply text-text-primary font-semibold;
+      @apply font-semibold text-text-primary;
     }
 
     a {
-      @apply break-words text-text-primary underline decoration-line-structure hover:decoration-text-primary underline-offset-4 font-medium transition-colors;
+      @apply font-medium break-words text-text-primary underline decoration-line-structure underline-offset-4 transition-colors hover:decoration-text-primary;
     }
 
     ul {
-      @apply overflow-x-clip list-disc list-outside ps-5 space-y-2 my-5;
+      @apply my-5 list-outside list-disc space-y-2 overflow-x-clip ps-5;
     }
 
     ol {
-      @apply list-decimal list-outside ps-5 space-y-2 my-5;
+      @apply my-5 list-outside list-decimal space-y-2 ps-5;
     }
 
     li {
@@ -53,19 +53,19 @@
     }
 
     hr {
-      @apply border-line-structure my-8;
+      @apply my-8 border-line-structure;
     }
 
     img {
-      @apply mx-auto rounded-md border border-line-structure shadow-xs my-6;
+      @apply mx-auto my-6 rounded-md border border-line-structure shadow-xs;
     }
 
     figcaption {
-      @apply text-center text-xs text-text-tertiary font-mono mt-2;
+      @apply mt-2 text-center font-mono text-xs text-text-tertiary;
     }
 
     table {
-      @apply w-full border-collapse border border-line-structure my-6 text-sm overflow-hidden rounded-md;
+      @apply my-6 w-full border-collapse overflow-hidden rounded-md border border-line-structure text-sm;
 
       th,
       td {
@@ -73,11 +73,11 @@
       }
 
       th {
-        @apply bg-surface-1 font-mono text-xs uppercase tracking-wider text-text-primary py-2.5;
+        @apply bg-surface-1 py-2.5 font-mono text-xs tracking-wider text-text-primary uppercase;
       }
 
       td {
-        @apply text-text-secondary bg-surface-bg;
+        @apply bg-surface-bg text-text-secondary;
       }
 
       code {
@@ -86,33 +86,33 @@
     }
 
     code {
-      @apply rounded bg-surface-1 px-1.5 py-0.5 font-mono text-[13.5px] text-text-primary border border-line-structure before:content-none after:content-none;
+      @apply rounded border border-line-structure bg-surface-1 px-1.5 py-0.5 font-mono text-[13.5px] text-text-primary before:content-none after:content-none;
     }
 
     .astro-code code {
-      @apply flex-[1_0_100%] bg-inherit p-0 border-none rounded-none;
+      @apply flex-[1_0_100%] rounded-none border-none bg-inherit p-0;
     }
 
     blockquote {
-      @apply border-s-2 border-line-cta bg-surface-1/40 pl-4 py-2.5 my-5 rounded-r text-text-secondary italic;
+      @apply my-5 rounded-r border-s-2 border-line-cta bg-surface-1/40 py-2.5 pl-4 text-text-secondary italic;
     }
 
     details {
-      @apply inline-block cursor-pointer text-text-primary select-none rounded border border-line-structure bg-surface-1 p-3 my-3 w-full [&_p]:hidden [&_ul]:!my-0;
+      @apply my-3 inline-block w-full cursor-pointer rounded border border-line-structure bg-surface-1 p-3 text-text-primary select-none [&_p]:hidden [&_ul]:!my-0;
     }
 
     summary {
-      @apply font-mono text-xs uppercase tracking-wider text-text-tertiary font-medium cursor-pointer hover:text-text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-cta;
+      @apply cursor-pointer font-mono text-xs font-medium tracking-wider text-text-tertiary uppercase hover:text-text-primary focus-visible:ring-1 focus-visible:ring-line-cta focus-visible:outline-none;
     }
 
     pre {
-      @apply border border-line-structure rounded-md my-5 p-4 sm:p-5 text-[13.5px] font-mono leading-relaxed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-line-cta;
+      @apply my-5 rounded-md border border-line-structure p-4 font-mono text-[13.5px] leading-relaxed focus-visible:ring-1 focus-visible:ring-line-cta focus-visible:outline-none sm:p-5;
     }
   }
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply flex border border-line-structure rounded-md p-4 sm:p-5 bg-surface-1 font-mono text-[13.5px] leading-relaxed overflow-x-auto shadow-xs;
+    @apply flex overflow-x-auto rounded-md border border-line-structure bg-surface-1 p-4 font-mono text-[13.5px] leading-relaxed shadow-xs sm:p-5;
   }
 
   /* Shiki syntax highlighting token colors */
@@ -122,7 +122,7 @@
   }
 
   html[data-theme="dark"] .astro-code {
-    @apply bg-surface-code border-line-structure;
+    @apply border-line-structure bg-surface-code;
   }
 
   html[data-theme="dark"] .astro-code,
@@ -142,7 +142,7 @@
       @apply inline-block w-full bg-surface-2/60;
     }
     .highlighted-word {
-      @apply rounded-sm border border-line-structure px-1 py-0.5 bg-surface-2;
+      @apply rounded-sm border border-line-structure bg-surface-2 px-1 py-0.5;
     }
   }
 
@@ -163,7 +163,15 @@
     background: var(--surface-1) !important;
     overflow-x: auto;
     /* reset inherited code-block typography so it matches mermaid's measurement */
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
     font-size: 16px;
     line-height: 1.5;
     text-align: center;
@@ -217,7 +225,11 @@
   pre.mermaid .node.control polygon,
   pre.mermaid .node.control circle,
   pre.mermaid .node.control path {
-    fill: color-mix(in srgb, var(--mm-control) 12%, var(--surface-bg)) !important;
+    fill: color-mix(
+      in srgb,
+      var(--mm-control) 12%,
+      var(--surface-bg)
+    ) !important;
     stroke: var(--mm-control) !important;
   }
   pre.mermaid .node.data rect,
@@ -349,7 +361,11 @@
   pre.mermaid .activation0,
   pre.mermaid .activation1,
   pre.mermaid .activation2 {
-    fill: color-mix(in srgb, var(--mm-control) 18%, var(--surface-bg)) !important;
+    fill: color-mix(
+      in srgb,
+      var(--mm-control) 18%,
+      var(--surface-bg)
+    ) !important;
     stroke: var(--mm-control) !important;
   }
 }

@@ -4,27 +4,25 @@ import { SHARE_LINKS } from "@/constants";
 const URL = Astro.url;
 ---
 
-{
-  SHARE_LINKS.length > 0 && (
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-md border border-line-structure bg-surface-1/40">
-      <div class="flex items-center gap-2 text-xs font-mono text-text-tertiary">
-        <span>✦</span>
-        <span>Share article:</span>
-      </div>
-      <div class="flex items-center gap-1.5 flex-wrap">
-        {SHARE_LINKS.map(social => (
-          <a
-            href={`${social.href + URL}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="p-2 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
-            title={social.linkTitle}
-            aria-label={social.linkTitle}
-          >
-            <social.icon class="size-4 fill-transparent stroke-current stroke-2" />
-          </a>
-        ))}
-      </div>
+{SHARE_LINKS.length > 0 && (
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-md border border-line-structure bg-surface-1/40">
+    <div class="flex items-center gap-2 text-xs font-mono text-text-tertiary">
+      <span>✦</span>
+      <span>Share article:</span>
     </div>
-  )
-}
+    <div class="flex items-center gap-1.5 flex-wrap">
+      {SHARE_LINKS.map(social => (
+        <a
+          href={`${social.href + URL}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-2 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-secondary hover:text-text-primary transition-colors"
+          title={social.linkTitle}
+          aria-label={social.linkTitle}
+        >
+          <social.icon class="size-4 fill-transparent stroke-current stroke-2" />
+        </a>
+      ))}
+    </div>
+  </div>
+)}

@@ -16,9 +16,16 @@ const sortedPosts = getSortedPosts(posts);
 
 <Layout>
   <Header />
-  <main id="main-content" data-layout="index" class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1">
+  <main
+    id="main-content"
+    data-layout="index"
+    class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1"
+  >
     <!-- Hero / Intro -->
-    <div id="hero" class="mb-10 flex flex-col gap-4 border-b border-line-structure pb-8 w-full">
+    <div
+      id="hero"
+      class="mb-10 flex flex-col gap-4 border-b border-line-structure pb-8 w-full"
+    >
       <div class="flex items-center gap-3">
         <h1 class="text-3xl sm:text-5xl font-semibold tracking-tight text-text-primary">
           Anant Agarwal
@@ -37,58 +44,57 @@ const sortedPosts = getSortedPosts(posts);
 
       <p class="text-base sm:text-lg text-text-secondary leading-relaxed font-normal w-full">
         I focus on building software with craftsmanship at its core: clean,
-        maintainable, and thoughtfully designed. My work emphasizes scalable distributed
-        systems, core systems, resilient architectures, and agentic AI workflows.
+        maintainable, and thoughtfully designed. My work emphasizes scalable
+        distributed systems, core systems, resilient architectures, and agentic
+        AI workflows.
       </p>
 
-      {
-        SOCIALS.length > 0 && (
-          <div class="mt-2 flex flex-wrap items-center gap-2">
-            {SOCIALS.map(social => (
-              <a
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
-                title={social.linkTitle}
-              >
-                <social.icon class="size-3.5 fill-transparent stroke-current stroke-2" />
-                <span>{social.name}</span>
-              </a>
-            ))}
+      {SOCIALS.length > 0 && (
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          {SOCIALS.map(social => (
             <a
-              href="/about"
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
               class="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
+              title={social.linkTitle}
             >
-              <span>About Me &rarr;</span>
+              <social.icon class="size-3.5 fill-transparent stroke-current stroke-2" />
+              <span>{social.name}</span>
             </a>
-          </div>
-        )
-      }
+          ))}
+          <a
+            href="/about"
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-xs font-mono text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <span>About Me &rarr;</span>
+          </a>
+        </div>
+      )}
     </div>
 
     <!-- Latest Posts Section -->
-    {
-      sortedPosts.length > 0 && (
-        <div id="latest-posts" class="mb-10 w-full">
-          <div class="mb-4 flex items-baseline justify-between">
-            <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
-              Latest Posts
-            </h2>
-            <span class="font-mono text-xs text-text-tertiary">[{sortedPosts.length}]</span>
-          </div>
-
-          <!-- Posts Container (matching Posts page) -->
-          <div class="rounded-md border border-line-structure bg-surface-bg overflow-hidden shadow-xs w-full">
-            <ul class="divide-y divide-line-structure">
-              {sortedPosts.slice(0, SITE.postPerIndex ?? 4).map(data => (
-                <Card {...data} />
-              ))}
-            </ul>
-          </div>
+    {sortedPosts.length > 0 && (
+      <div id="latest-posts" class="mb-10 w-full">
+        <div class="mb-4 flex items-baseline justify-between">
+          <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
+            Latest Posts
+          </h2>
+          <span class="font-mono text-xs text-text-tertiary">
+            [{sortedPosts.length}]
+          </span>
         </div>
-      )
-    }
+
+        <!-- Posts Container (matching Posts page) -->
+        <div class="rounded-md border border-line-structure bg-surface-bg overflow-hidden shadow-xs w-full">
+          <ul class="divide-y divide-line-structure">
+            {sortedPosts.slice(0, SITE.postPerIndex ?? 4).map(data => (
+              <Card {...data} />
+            ))}
+          </ul>
+        </div>
+      </div>
+    )}
 
     <!-- All Posts Link -->
     <div class="my-8">

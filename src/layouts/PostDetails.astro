@@ -97,27 +97,23 @@ const nextPost =
         <span>&larr;</span>
         <span>Back to posts</span>
       </a>
-      {
-        tags.length > 0 && (
-          <span class="uppercase tracking-wider px-2 py-0.5 rounded border border-line-structure bg-surface-1 text-text-secondary">
-            {tags[0]}
-          </span>
-        )
-      }
+      {tags.length > 0 && (
+        <span class="uppercase tracking-wider px-2 py-0.5 rounded border border-line-structure bg-surface-1 text-text-secondary">
+          {tags[0]}
+        </span>
+      )}
     </div>
 
     <!-- Post Header -->
     <div class="mb-8 flex flex-col gap-2">
       <div class="flex flex-wrap items-center gap-2 text-xs font-mono text-text-tertiary mb-1">
         <Datetime {pubDatetime} {modDatetime} {timezone} size="sm" />
-        {
-          SITE.editPost.enabled && !hideEditPost && (
-            <>
-              <span>·</span>
-              <EditPost {hideEditPost} {post} />
-            </>
-          )
-        }
+        {SITE.editPost.enabled && !hideEditPost && (
+          <>
+            <span>·</span>
+            <EditPost {hideEditPost} {post} />
+          </>
+        )}
       </div>
 
       <h1
@@ -127,44 +123,37 @@ const nextPost =
         {title}
       </h1>
 
-      {
-        description && (
-          <p class="text-base sm:text-lg text-text-secondary leading-relaxed mt-2 font-normal">
-            {description}
-          </p>
-        )
-      }
+      {description && (
+        <p class="text-base sm:text-lg text-text-secondary leading-relaxed mt-2 font-normal">
+          {description}
+        </p>
+      )}
     </div>
 
     <div class="border-b border-line-structure mb-8"></div>
 
     <!-- Article Content -->
-    <article
-      id="article"
-      class="app-prose w-full"
-    >
+    <article id="article" class="app-prose w-full">
       <Content />
     </article>
 
     <div class="my-8 border-t border-line-structure"></div>
 
     <!-- Post Tags -->
-    {
-      tags.length > 0 && (
-        <div class="my-6 flex flex-wrap gap-2 items-center">
-          <span class="font-mono text-xs text-text-tertiary">Tags:</span>
-          {tags.map(tag => (
-            <a
-              href={`/tags/${slugifyStr(tag)}/`}
-              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 font-mono text-xs text-text-secondary hover:text-text-primary transition-colors"
-            >
-              <span>#</span>
-              <span>{tag}</span>
-            </a>
-          ))}
-        </div>
-      )
-    }
+    {tags.length > 0 && (
+      <div class="my-6 flex flex-wrap gap-2 items-center">
+        <span class="font-mono text-xs text-text-tertiary">Tags:</span>
+        {tags.map(tag => (
+          <a
+            href={`/tags/${slugifyStr(tag)}/`}
+            class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 font-mono text-xs text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <span>#</span>
+            <span>{tag}</span>
+          </a>
+        ))}
+      </div>
+    )}
 
     <BackToTopButton />
 
@@ -175,39 +164,42 @@ const nextPost =
     <div class="my-8 border-t border-line-structure"></div>
 
     <!-- Previous/Next Post Cards (Langfuse Grid Style) -->
-    <div data-pagefind-ignore class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
-      {
-        prevPost ? (
-          <a
-            href={getPath(prevPost.id, prevPost.filePath)}
-            class="group p-4 rounded-md border border-line-structure bg-surface-bg hover:border-line-cta hover:bg-surface-1 transition-colors flex flex-col gap-1.5"
-          >
-            <div class="flex items-center gap-1.5 text-xs font-mono text-text-tertiary">
-              <IconChevronLeft class="size-3.5 rtl:rotate-180" />
-              <span>Previous Article</span>
-            </div>
-            <div class="text-sm font-medium text-text-primary group-hover:text-text-primary line-clamp-2">
-              {prevPost.title}
-            </div>
-          </a>
-        ) : <div />
-      }
-      {
-        nextPost ? (
-          <a
-            href={getPath(nextPost.id, nextPost.filePath)}
-            class="group p-4 rounded-md border border-line-structure bg-surface-bg hover:border-line-cta hover:bg-surface-1 transition-colors flex flex-col items-end gap-1.5 text-right sm:col-start-2"
-          >
-            <div class="flex items-center gap-1.5 text-xs font-mono text-text-tertiary">
-              <span>Next Article</span>
-              <IconChevronRight class="size-3.5 rtl:rotate-180" />
-            </div>
-            <div class="text-sm font-medium text-text-primary group-hover:text-text-primary line-clamp-2">
-              {nextPost.title}
-            </div>
-          </a>
-        ) : <div />
-      }
+    <div
+      data-pagefind-ignore
+      class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8"
+    >
+      {prevPost ? (
+        <a
+          href={getPath(prevPost.id, prevPost.filePath)}
+          class="group p-4 rounded-md border border-line-structure bg-surface-bg hover:border-line-cta hover:bg-surface-1 transition-colors flex flex-col gap-1.5"
+        >
+          <div class="flex items-center gap-1.5 text-xs font-mono text-text-tertiary">
+            <IconChevronLeft class="size-3.5 rtl:rotate-180" />
+            <span>Previous Article</span>
+          </div>
+          <div class="text-sm font-medium text-text-primary group-hover:text-text-primary line-clamp-2">
+            {prevPost.title}
+          </div>
+        </a>
+      ) : (
+        <div />
+      )}
+      {nextPost ? (
+        <a
+          href={getPath(nextPost.id, nextPost.filePath)}
+          class="group p-4 rounded-md border border-line-structure bg-surface-bg hover:border-line-cta hover:bg-surface-1 transition-colors flex flex-col items-end gap-1.5 text-right sm:col-start-2"
+        >
+          <div class="flex items-center gap-1.5 text-xs font-mono text-text-tertiary">
+            <span>Next Article</span>
+            <IconChevronRight class="size-3.5 rtl:rotate-180" />
+          </div>
+          <div class="text-sm font-medium text-text-primary group-hover:text-text-primary line-clamp-2">
+            {nextPost.title}
+          </div>
+        </a>
+      ) : (
+        <div />
+      )}
     </div>
   </main>
   <Footer />

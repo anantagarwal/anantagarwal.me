@@ -11,44 +11,45 @@ export interface Props {
 const { page } = Astro.props;
 ---
 
-{
-  page.lastPage > 1 && (
-    <nav class="my-8 flex items-center justify-center gap-3 font-mono text-xs text-text-tertiary" aria-label="Pagination">
-      {page.url.prev ? (
-        <a
-          href={page.url.prev}
-          class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-primary transition-colors"
-          aria-label="Previous Page"
-        >
-          <IconArrowLeft class="size-3 rtl:rotate-180" />
-          <span>Prev</span>
-        </a>
-      ) : (
-        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1/50 text-text-disabled cursor-not-allowed">
-          <IconArrowLeft class="size-3 rtl:rotate-180" />
-          <span>Prev</span>
-        </span>
-      )}
-
-      <span class="px-2 py-1 text-text-secondary">
-        {page.currentPage} / {page.lastPage}
+{page.lastPage > 1 && (
+  <nav
+    class="my-8 flex items-center justify-center gap-3 font-mono text-xs text-text-tertiary"
+    aria-label="Pagination"
+  >
+    {page.url.prev ? (
+      <a
+        href={page.url.prev}
+        class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-primary transition-colors"
+        aria-label="Previous Page"
+      >
+        <IconArrowLeft class="size-3 rtl:rotate-180" />
+        <span>Prev</span>
+      </a>
+    ) : (
+      <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1/50 text-text-disabled cursor-not-allowed">
+        <IconArrowLeft class="size-3 rtl:rotate-180" />
+        <span>Prev</span>
       </span>
+    )}
 
-      {page.url.next ? (
-        <a
-          href={page.url.next}
-          class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-primary transition-colors"
-          aria-label="Next Page"
-        >
-          <span>Next</span>
-          <IconArrowRight class="size-3 rtl:rotate-180" />
-        </a>
-      ) : (
-        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1/50 text-text-disabled cursor-not-allowed">
-          <span>Next</span>
-          <IconArrowRight class="size-3 rtl:rotate-180" />
-        </span>
-      )}
-    </nav>
-  )
-}
+    <span class="px-2 py-1 text-text-secondary">
+      {page.currentPage} / {page.lastPage}
+    </span>
+
+    {page.url.next ? (
+      <a
+        href={page.url.next}
+        class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1 hover:border-line-cta hover:bg-surface-2 text-text-primary transition-colors"
+        aria-label="Next Page"
+      >
+        <span>Next</span>
+        <IconArrowRight class="size-3 rtl:rotate-180" />
+      </a>
+    ) : (
+      <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded border border-line-structure bg-surface-1/50 text-text-disabled cursor-not-allowed">
+        <span>Next</span>
+        <IconArrowRight class="size-3 rtl:rotate-180" />
+      </span>
+    )}
+  </nav>
+)}

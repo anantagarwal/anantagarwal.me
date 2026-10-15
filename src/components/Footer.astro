@@ -11,11 +11,18 @@ export interface Props {
 const { noMarginTop = false } = Astro.props;
 ---
 
-<footer class:list={["w-full border-t border-line-structure bg-surface-1/40", { "mt-auto": !noMarginTop }]}>
+<footer
+  class:list={[
+    "w-full border-t border-line-structure bg-surface-1/40",
+    { "mt-auto": !noMarginTop },
+  ]}
+>
   <div class="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
     <div class="flex flex-col items-center sm:items-start gap-1">
       <div class="flex items-center gap-2">
-        <span class="font-semibold text-sm text-text-primary tracking-tight">{SITE.title}</span>
+        <span class="font-semibold text-sm text-text-primary tracking-tight">
+          {SITE.title}
+        </span>
         <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border border-line-structure bg-surface-1 text-text-tertiary">
           crafting systems
         </span>
