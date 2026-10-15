@@ -1,94 +1,213 @@
 ---
-interface Experience {
-  role: string;
-  company: string;
+interface Role {
+  title: string;
   dateRange: string;
+  duration?: string;
   location?: string;
+  locationType?: string; // e.g. "On-site", "Hybrid", "Remote"
   description: string;
+}
+
+interface Experience {
+  company: string;
+  employmentType?: string;
+  totalDuration?: string;
+  location?: string;
+  locationType?: string;
+  // For single role
+  role?: string;
+  dateRange?: string;
+  duration?: string;
+  description?: string;
+  // For multiple roles under the same company
+  roles?: Role[];
 }
 
 const experiences: Experience[] = [
   {
     role: "Principal Software Engineer",
-    company: "Audax (Standard Chartered Ventures)",
+    company: "audax",
+    employmentType: "Full-time",
     dateRange: "May 2025 – Present",
-    location: "Bengaluru",
+    duration: "1 yr 6 mos",
+    location: "Bengaluru, Karnataka, India",
+    locationType: "Hybrid",
     description:
       "Led greenfield delivery of three core banking modules (Products, Payments & Cards, Accounts & Transactions) with a team of 15 engineers. Hands-on across architecture, service development, ISO 20022 integration, and CI/CD.",
   },
   {
     role: "Engineering Lead",
     company: "Standard Chartered Bank",
+    employmentType: "Full-time",
     dateRange: "Oct 2020 – May 2025",
-    location: "Bengaluru",
+    duration: "4 yrs 8 mos",
+    location: "Bangalore Urban, Karnataka, India",
     description:
       "Architected the CQRS-based Accounts & Transactions layer and led Open Banking (BISNAP) for Indonesia. Also built OPA-based API authorization, the Nexus Tracer logging framework, and a loan ops portal.",
   },
   {
     role: "Lead Consultant",
-    company: "ThoughtWorks Technologies India",
+    company: "ThoughtWorks",
+    employmentType: "Full-time",
     dateRange: "Dec 2019 – Oct 2020",
-    location: "Bengaluru",
+    duration: "11 mos",
+    location: "Greater Bengaluru Area",
     description:
       "Security Champion following the STRIDE model on an existing pricing product. Handled upgrades and migrated from a long-running AWS EMR cluster to ephemeral clusters.",
   },
   {
     role: "Technical Architect",
-    company: "Rupeelog Financial Services",
-    dateRange: "Jan 2019 – Dec 2019",
-    location: "Bengaluru",
+    company: "Rupeelog Financial Services Pvt. Ltd.",
+    employmentType: "Full-time",
+    dateRange: "Jan 2019 – Oct 2019",
+    duration: "10 mos",
     description:
       "Built a multi-tenant PWA and microservices for reporting, mandates and communication. Integrated with NSE and BSE for mutual fund transactions.",
   },
   {
-    role: "Technical Architect",
-    company: "TCS BaNCS Branch Banking",
-    dateRange: "Jun 2014 – Dec 2018",
-    description:
-      "Architected the Branch Channel solution and a metadata-driven UI framework, led teams across implementations in Israel, Australia, Sweden, the Middle East and the UK. Mentored juniors along the way.",
-  },
-  {
-    role: "Technical Lead",
-    company: "TCS BaNCS Corporate Banking",
-    dateRange: "May 2011 – Apr 2014",
-    description:
-      "Led the team building a metadata-based bulk payments file processing engine, including its performance tuning and security.",
-  },
-  {
-    role: "Developer",
-    company: "TCS BaNCS Wealth Management",
-    dateRange: "Jan 2007 – Apr 2011",
-    description:
-      "Built reports and financial logic for cashflow, planning and portfolio rebalancing, and worked on site with the UK client to bridge their needs and the product.",
+    company: "Tata Consultancy Services",
+    employmentType: "Full-time",
+    totalDuration: "12 yrs 3 mos",
+    location: "Bengaluru, Karnataka, India",
+    roles: [
+      {
+        title: "Technical Architect - TCS BaNCS",
+        dateRange: "Jun 2014 – Dec 2018",
+        duration: "4 yrs 7 mos",
+        description:
+          "BaNCS Branch Banking - Architected the Branch Channel solution and a metadata-driven UI framework, led teams across implementations in Israel, Australia, Sweden, the Middle East and the UK. Mentored juniors along the way.",
+      },
+      {
+        title: "Technical Lead - TCS BaNCS",
+        dateRange: "May 2011 – May 2014",
+        duration: "3 yrs 1 mo",
+        locationType: "On-site",
+        description:
+          "BaNCS Corporate Banking - Led the team building a metadata-based bulk payments file processing engine, including its performance tuning and security.",
+      },
+      {
+        title: "Developer - TCS BaNCS",
+        dateRange: "Oct 2006 – Apr 2011",
+        duration: "4 yrs 7 mos",
+        locationType: "On-site",
+        description:
+          "BaNCS Wealth Management - Built reports and financial logic for cashflow, planning and portfolio rebalancing, and worked on site with the UK client to bridge their needs and the product.",
+      },
+    ],
   },
 ];
 ---
 
 <div class="relative my-6 border-s border-line-structure ml-2 sm:ml-3 pl-6 sm:pl-8 space-y-10">
-  {experiences.map((exp) => (
-    <div class="relative group">
-      <div class="absolute -start-[29px] sm:-start-[37px] top-1.5 h-2 w-2 rounded-full bg-text-primary ring-4 ring-surface-bg transition-transform duration-200 group-hover:scale-125"></div>
+  {experiences.map(exp => {
+    const isMultiRole = Array.isArray(exp.roles) && exp.roles.length > 0;
 
-      <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-        <h3 class="text-base sm:text-lg font-semibold text-text-primary">
-          {exp.role}
-          <span class="font-normal text-text-tertiary"> · </span>
-          <span class="text-text-secondary font-medium">{exp.company}</span>
-        </h3>
-        <time class="text-xs font-mono text-text-tertiary sm:text-right shrink-0">
-          {exp.dateRange}
-        </time>
+    return (
+      <div class="relative group">
+        {/* Main timeline dot */}
+        <div class="absolute -start-[29px] sm:-start-[37px] top-1.5 h-2 w-2 rounded-full bg-text-primary ring-4 ring-surface-bg transition-transform duration-200 group-hover:scale-125"></div>
+
+        {isMultiRole ? (
+          <div>
+            {/* Company Header */}
+            <div>
+              <h3 class="text-base sm:text-lg font-semibold text-text-primary leading-snug">
+                {exp.company}
+              </h3>
+              <div class="text-xs sm:text-sm text-text-tertiary mt-0.5">
+                {exp.employmentType && <span>{exp.employmentType}</span>}
+                {exp.employmentType && exp.totalDuration && <span> · </span>}
+                {exp.totalDuration && <span>{exp.totalDuration}</span>}
+              </div>
+              {exp.location && (
+                <div class="text-xs text-text-tertiary mt-0.5">
+                  {exp.location}
+                </div>
+              )}
+            </div>
+
+            {/* Nested Sub-Timeline for Multiple Roles */}
+            <div class="relative mt-4 space-y-6 ml-0.5 sm:ml-1">
+              {exp.roles!.map((role, idx) => {
+                const isLast = idx === exp.roles!.length - 1;
+
+                return (
+                  <div class="relative pl-6 sm:pl-7 group/role">
+                    {/* Sub-timeline connector line between role dots */}
+                    {!isLast && (
+                      <div
+                        class="absolute start-[3px] sm:start-[4px] top-2 -bottom-6 w-[2px] bg-line-structure"
+                        aria-hidden="true"
+                      />
+                    )}
+
+                    {/* Sub-timeline dot */}
+                    <div
+                      class="absolute start-0 sm:start-[1px] top-1.5 h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-text-disabled ring-4 ring-surface-bg transition-all duration-200 group-hover/role:bg-text-primary group-hover/role:scale-125"
+                      aria-hidden="true"
+                    />
+
+                    {/* Role Details */}
+                    <div>
+                      <h4 class="text-sm sm:text-base font-semibold text-text-primary">
+                        {role.title}
+                      </h4>
+                      <div class="text-xs font-mono text-text-tertiary mt-0.5">
+                        {role.dateRange}
+                        {role.duration && (
+                          <span class="font-sans"> · {role.duration}</span>
+                        )}
+                      </div>
+                      {role.locationType && (
+                        <div class="text-xs font-mono text-text-tertiary mt-0.5">
+                          {role.locationType}
+                        </div>
+                      )}
+                      <p class="mt-2 text-sm leading-relaxed text-text-secondary">
+                        {role.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          /* Single Role Company */
+          <div>
+            <h3 class="text-base sm:text-lg font-semibold text-text-primary">
+              {exp.role}
+            </h3>
+
+            <div class="text-sm font-medium text-text-secondary mt-0.5">
+              {exp.company}
+              {exp.employmentType && (
+                <span class="font-normal text-text-tertiary">
+                  {" "}
+                  · {exp.employmentType}
+                </span>
+              )}
+            </div>
+
+            <div class="text-xs font-mono text-text-tertiary mt-1">
+              {exp.dateRange}
+              {exp.duration && <span class="font-sans"> · {exp.duration}</span>}
+            </div>
+
+            {(exp.location || exp.locationType) && (
+              <div class="text-xs font-mono text-text-tertiary mt-0.5">
+                {exp.location}
+                {exp.location && exp.locationType && <span> · </span>}
+                {exp.locationType && <span>{exp.locationType}</span>}
+              </div>
+            )}
+
+            <p class="mt-2.5 text-sm leading-relaxed text-text-secondary">
+              {exp.description}
+            </p>
+          </div>
+        )}
       </div>
-
-      {exp.location && (
-        <div class="mt-0.5 text-xs font-mono text-text-tertiary">
-          {exp.location}
-        </div>
-      )}
-
-      <p class="mt-2.5 text-sm leading-relaxed text-text-secondary">
-        {exp.description}
-      </p>
-    </div>
-  ))}
+    );
+  })}
 </div>
