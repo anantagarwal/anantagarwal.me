@@ -121,3 +121,45 @@ CONSTRAINTS:
 - No marketing language
 - No "getting started" or installation
 - Depth > breadth
+
+LATEX & MATH FORMATTING RULES (STRICT):
+- The site uses `remark-math` and `rehype-katex` with styles defined in `src/styles/typography.css` and `Layout.astro`.
+- **Multi-line `$$` for Display Math (MANDATORY)**:
+  Every display equation must have `$$` on its own line, surrounded by empty lines:
+  ```markdown
+  $$
+  L = \lambda W
+  $$
+  ```
+  **NEVER** write single-line display math like `$$L = \lambda W$$`. In `remark-math`, single-line `$$...$$` is parsed as inline math (`<span class="katex">`) wrapped in a paragraph rather than a block (`<span class="katex-display">`). This breaks equation centering, removes vertical display margins, and drops `.katex-display`'s `overflow-x: auto` rule, causing long equations to clip on smaller screens.
+- **Inline Math**:
+  Use single dollar signs for variables and compact inline expressions: `$L$`, `$\lambda$`, `$O(N^2)$`.
+- **Literal Currency**:
+  Always escape dollar signs when referring to prices or currency (`\$100`, `\$0.30/M`) to avoid accidentally triggering inline math mode across paragraphs.
+- **No Pseudo-LaTeX for Architecture Flows**:
+  Never use LaTeX math blocks to draw UI pipelines or text sequences (e.g., `$$\text{Step A} \longrightarrow \text{Step B}$$`). Use inline markdown badges (`` `Step A` → `Step B` ``) or a Mermaid flowchart instead. KaTeX is strictly for mathematical equations.
+
+MARKDOWN & CALLOUT RESTRICTIONS:
+- **No GitHub-style alert syntax**: Do not use `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, or `> [!WARNING]`. The Astro parser does not use `remark-github-alerts`; these render as raw literal tags inside standard blockquotes. Use styled bold blockquotes instead: `> **Note**: ...` or `> **Takeaway**: ...`.
+- **No em dashes (`—`) or en dashes (`–`)**: Follow the strict rule from Tone: use colons, commas, hyphens, or parentheses.
+
+LATEX & MATH FORMATTING RULES (STRICT):
+- The site uses `remark-math` and `rehype-katex` with styles defined in `src/styles/typography.css` and `Layout.astro`.
+- **Multi-line `$$` for Display Math (MANDATORY)**:
+  Every display equation must have `$$` on its own line, surrounded by empty lines:
+  ```markdown
+  $$
+  L = \lambda W
+  $$
+  ```
+  **NEVER** write single-line display math like `$$L = \lambda W$$`. In `remark-math`, single-line `$$...$$` is parsed as inline math (`<span class="katex">`) wrapped in a paragraph rather than a block (`<span class="katex-display">`). This breaks equation centering, removes vertical display margins, and drops `.katex-display`'s `overflow-x: auto` rule, causing long equations to clip on smaller screens.
+- **Inline Math**:
+  Use single dollar signs for variables and compact inline expressions: `$L$`, `$\lambda$`, `$O(N^2)$`.
+- **Literal Currency**:
+  Always escape dollar signs when referring to prices or currency (`\$100`, `\$0.30/M`) to avoid accidentally triggering inline math mode across paragraphs.
+- **No Pseudo-LaTeX for Architecture Flows**:
+  Never use LaTeX math blocks to draw UI pipelines or text sequences (e.g., `$$\text{Step A} \longrightarrow \text{Step B}$$`). Use inline markdown badges (`` `Step A` → `Step B` ``) or a Mermaid flowchart instead. KaTeX is strictly for mathematical equations.
+
+MARKDOWN & CALLOUT RESTRICTIONS:
+- **No GitHub-style alert syntax**: Do not use `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, or `> [!WARNING]`. The Astro parser does not use `remark-github-alerts`; these render as raw literal tags inside standard blockquotes. Use styled bold blockquotes instead: `> **Note**: ...` or `> **Takeaway**: ...`.
+- **No em dashes (`—`) or en dashes (`–`)**: Follow the strict rule from Tone: use colons, commas, hyphens, or parentheses.
