@@ -358,6 +358,25 @@
   pre.mermaid .noteText > tspan {
     fill: var(--text-primary) !important;
   }
+  .katex {
+    font-size: 1em !important;
+    text-rendering: auto;
+  }
+
+  .katex-display {
+    font-size: 1.05em !important;
+    margin: 1.5em 0 !important;
+    padding: 0.5em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .katex-display > .katex {
+    display: inline-block;
+    white-space: nowrap;
+    text-align: center;
+  }
+
   pre.mermaid .activation0,
   pre.mermaid .activation1,
   pre.mermaid .activation2 {
