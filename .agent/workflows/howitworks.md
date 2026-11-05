@@ -62,7 +62,7 @@ DOCUMENT STRUCTURE (STRICT):
 8. **Minimal Code or Pseudocode (Optional)**
    - Only if it clarifies internals
    - No tutorials or setup instructions
-   - Use Java for pseudocode
+   - Use Java or appropriate thats suitable for pseudocode
 
 9. **How to Think About Similar Systems**
    - Transferable mental models
