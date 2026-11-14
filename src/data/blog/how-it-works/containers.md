@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-10-13T00:45:00Z
 title: "How Does a Container Work? Namespaces, cgroups and Union Filesystems"
-featured: true
+featured: false
 draft: false
 tags:
   - containers

@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-11-07T06:30:00Z
 title: "How Does an AI Agent Harness Work? Inside the Loop, Tools, Sessions, and Compaction, Using Pi"
-featured: true
+featured: false
 draft: false
 tags:
   - ai-agents

@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-11-05T09:30:00Z
 title: "Giving Your AI Assistant a Memory: Facts, Understanding, and a Pi Extension"
-featured: true
+featured: false
 draft: false
 tags:
   - ai-agents

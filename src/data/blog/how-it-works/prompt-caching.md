@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-11-01T05:30:00Z
 title: "How Does Prompt Caching Work in AI Agents? Internal Mechanics, KV Paging, and Execution Economics"
-featured: true
+featured: false
 draft: false
 tags:
   - ai-agents

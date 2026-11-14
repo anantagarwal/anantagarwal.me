@@ -12,6 +12,8 @@ import { SOCIALS } from "@/constants";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 const sortedPosts = getSortedPosts(posts);
+const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
+const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
 <Layout>
@@ -73,23 +75,45 @@ const sortedPosts = getSortedPosts(posts);
       )}
     </div>
 
+    <!-- Featured Posts Section -->
+    {featuredPosts.length > 0 && (
+      <div id="featured" class="mb-10 w-full">
+        <div class="mb-4 flex items-baseline justify-between">
+          <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
+            Featured
+          </h2>
+          <span class="font-mono text-xs text-text-tertiary">
+            [{featuredPosts.length}]
+          </span>
+        </div>
+
+        <div class="rounded-md border border-line-structure bg-surface-bg overflow-hidden shadow-xs w-full">
+          <ul class="divide-y divide-line-structure">
+            {featuredPosts.map(data => (
+              <Card variant="h3" {...data} />
+            ))}
+          </ul>
+        </div>
+      </div>
+    )}
+
     <!-- Latest Posts Section -->
-    {sortedPosts.length > 0 && (
+    {recentPosts.length > 0 && (
       <div id="latest-posts" class="mb-10 w-full">
         <div class="mb-4 flex items-baseline justify-between">
           <h2 class="text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
             Latest Posts
           </h2>
           <span class="font-mono text-xs text-text-tertiary">
-            [{sortedPosts.length}]
+            [{recentPosts.length}]
           </span>
         </div>
 
         <!-- Posts Container (matching Posts page) -->
         <div class="rounded-md border border-line-structure bg-surface-bg overflow-hidden shadow-xs w-full">
           <ul class="divide-y divide-line-structure">
-            {sortedPosts.slice(0, SITE.postPerIndex ?? 4).map(data => (
-              <Card {...data} />
+            {recentPosts.slice(0, SITE.postPerIndex ?? 4).map(data => (
+              <Card variant="h3" {...data} />
             ))}
           </ul>
         </div>

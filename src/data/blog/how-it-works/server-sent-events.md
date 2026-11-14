@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-10-27T00:30:00Z
 title: "How Do Server-Sent Events Work? The Architecture of Unidirectional HTTP Streaming"
-featured: true
+featured: false
 draft: false
 tags:
   - sse

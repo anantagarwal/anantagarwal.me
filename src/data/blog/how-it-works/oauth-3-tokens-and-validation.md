@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-10-22T14:30:00Z
 title: "How Does OAuth 2.0 Work? Part 3: Tokens, Cryptographic Validation, and Revocation"
-featured: true
+featured: false
 draft: false
 tags:
   - oauth

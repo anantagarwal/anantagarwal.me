@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-10-14T23:59:00Z
 title: "How Does Kong API Gateway Work? NGINX, LuaJIT, and the OpenResty Data Plane"
-featured: true
+featured: false
 draft: false
 tags:
   - kong

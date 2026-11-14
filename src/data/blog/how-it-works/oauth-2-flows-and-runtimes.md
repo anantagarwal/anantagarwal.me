@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-10-22T14:15:00Z
 title: "How Does OAuth 2.0 Work? Part 2: Protocol Flows Across Modern Client Runtimes"
-featured: true
+featured: false
 draft: false
 tags:
   - oauth

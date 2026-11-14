@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-10-22T14:00:00Z
 title: "How Does OAuth 2.0 Work? Part 1: Architecture, Trust Boundaries, and Channels"
-featured: true
+featured: false
 draft: false
 tags:
   - oauth

@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-10-25T09:00:00Z
 title: "How Does OAuth 2.0 Work? Part 4: Advanced Security with FAPI, PAR, DPoP, and Message Signing"
-featured: true
+featured: false
 draft: false
 tags:
   - oauth

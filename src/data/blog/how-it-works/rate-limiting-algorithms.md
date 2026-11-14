@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-11-01T01:00:00Z
 title: "How Do Rate Limiting Algorithms Work? Internal Mechanics, Token Buckets, and Distributed State"
-featured: true
+featured: false
 draft: false
 tags:
   - rate-limiting

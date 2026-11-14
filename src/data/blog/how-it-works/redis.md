@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-05-27T15:46:10Z
 title: "How Does Redis Work? Demystifying epoll and the Event Loop"
-featured: true
+featured: false
 draft: false
 tags:
   - redis
