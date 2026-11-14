@@ -1,4 +1,6 @@
 ---
+import { formatDuration } from "@/utils/formatDuration";
+
 interface Role {
   title: string;
   dateRange: string;
@@ -25,11 +27,19 @@ interface Experience {
 
 const experiences: Experience[] = [
   {
+    role: "CECI - Head of Engineering, Digital",
+    company: "Chubb",
+    employmentType: "Full-time",
+    dateRange: "Nov 2026 – Present",
+    location: "Bangalore Urban, Karnataka, India",
+    locationType: "Hybrid",
+  },
+  {
     role: "Principal Software Engineer",
     company: "audax",
     employmentType: "Full-time",
-    dateRange: "May 2025 – Present",
-    duration: "1 yr 6 mos",
+    dateRange: "May 2025 – Nov 2026",
+    duration: "1 yr 7 mos",
     location: "Bengaluru, Karnataka, India",
     locationType: "Hybrid",
     description:
@@ -101,6 +111,9 @@ const experiences: Experience[] = [
 <div class="relative my-6 border-s border-line-structure ml-2 sm:ml-3 pl-6 sm:pl-8 space-y-10">
   {experiences.map(exp => {
     const isMultiRole = Array.isArray(exp.roles) && exp.roles.length > 0;
+    const isPresent = Boolean(exp.dateRange && /present/i.test(exp.dateRange));
+    const displayDuration =
+      exp.duration ?? (exp.dateRange ? formatDuration(exp.dateRange) : undefined);
 
     return (
       <div class="relative group">
@@ -191,7 +204,15 @@ const experiences: Experience[] = [
 
             <div class="text-xs font-mono text-text-tertiary mt-1">
               {exp.dateRange}
-              {exp.duration && <span class="font-sans"> · {exp.duration}</span>}
+              {displayDuration && (
+                <span
+                  class="font-sans"
+                  data-date-range={isPresent ? exp.dateRange : undefined}
+                >
+                  {" "}
+                  · {displayDuration}
+                </span>
+              )}
             </div>
 
             {(exp.location || exp.locationType) && (
@@ -202,12 +223,32 @@ const experiences: Experience[] = [
               </div>
             )}
 
-            <p class="mt-2.5 text-sm leading-relaxed text-text-secondary">
-              {exp.description}
-            </p>
+            {exp.description && (
+              <p class="mt-2.5 text-sm leading-relaxed text-text-secondary">
+                {exp.description}
+              </p>
+            )}
           </div>
         )}
       </div>
     );
   })}
 </div>
+
+<script>
+  import { formatDuration } from "@/utils/formatDuration";
+
+  function updatePresentDurations() {
+    document.querySelectorAll<HTMLElement>("[data-date-range]").forEach(el => {
+      const range = el.dataset.dateRange;
+      if (!range) return;
+      const formatted = formatDuration(range);
+      if (formatted) {
+        el.textContent = ` · ${formatted}`;
+      }
+    });
+  }
+
+  updatePresentDurations();
+  document.addEventListener("astro:page-load", updatePresentDurations);
+</script>
