@@ -2,7 +2,7 @@
 author: Anant Agarwal
 pubDatetime: 2026-11-14T08:08:12Z
 title: "Software Craftsmanship in the AI Era"
-featured: false
+featured: true
 draft: false
 tags:
   - software-craftsmanship
